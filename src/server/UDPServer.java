@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 
-class UDPServer {
+class UDPServer implements common.Communicates {
 	private PlayerManager playerManager;
 	
 	public static void main(String args[])  throws Exception{
@@ -18,8 +18,7 @@ class UDPServer {
        byte[] receiveData = new byte[1024];
        
        while(true) {
-    	   System.out.println("Servidor UDP ouvindo... (fala que eu te escuto)");            	
-            
+    	    
            //declara o pacote a ser recebido
            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
@@ -35,5 +34,15 @@ class UDPServer {
            System.out.println("Mensagem recebida: \n" + sentence);
        }
    }
+
+	public void sendMessage(DatagramPacket pack) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void receiveMessage(DatagramPacket pack) {
+		// TODO Auto-generated method stub
+		
+	}
    
 }
