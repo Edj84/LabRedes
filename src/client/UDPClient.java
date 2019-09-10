@@ -1,3 +1,4 @@
+package client;
 
 // Envia o pacote contendo um arquivo ao servidor
 
