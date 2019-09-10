@@ -7,42 +7,47 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 
-class UDPServer implements common.Communicates {
+class UDPServer implements common.Communicates{
 	private PlayerManager playerManager;
+	private static DatagramSocket serverSocket;
+	private static DatagramPacket receivedPacket;
+	private static byte[] receiveData;
 	
-	public static void main(String args[])  throws Exception{
-	   
-	   // cria socket do servidor com a porta 9876
-       DatagramSocket serverSocket = new DatagramSocket(8080);
-
-       byte[] receiveData = new byte[1024];
-       
-       while(true) {
-    	    
-           //declara o pacote a ser recebido
-           DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-
-           //recebe o pacote do cliente
-           serverSocket.receive(receivePacket);
-
-           //pega os dados, o endereçoo IP e a porta do cliente
-           //para poder mandar a msg de volta
-           String sentence = new String(receivePacket.getData());
-           InetAddress IPAddress = receivePacket.getAddress();
-           int port = receivePacket.getPort();
-
-           System.out.println("Mensagem recebida: \n" + sentence);
+	public static void main(String args[]) throws Exception{
+		serverSocket = new DatagramSocket(8080);
+	       
+	    while(true) {
+	    	receiveMessage();           
        }
    }
+	
+	public void receiveMessage() {
+		
+        try {
+			serverSocket.receive(receivedPacket);
+			receiveData = new byte[1024];
+			receivedPacket = new DatagramPacket(receiveData, receiveData.length);
+		} 
+        
+        catch (IOException e) {
+			System.out.println("Unable to receive package from client");
+		}
 
-	public void sendMessage(DatagramPacket pack) {
+        process();
+	}
+
+	private void process() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void receiveMessage(DatagramPacket pack) {
-		// TODO Auto-generated method stub
+	public void sendMessage() {
+		String sentence = new String(receivedPacket.getData());
+        InetAddress IPAddress = receivedPacket.getAddress();
+        int port = receivedPacket.getPort();
 		
 	}
+
+	
    
 }
