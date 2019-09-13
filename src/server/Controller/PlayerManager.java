@@ -1,4 +1,4 @@
-package server;
+package server.Controller;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ public class PlayerManager {
 	
 	public boolean login(Player player){
 		
-		// if(players.stream().anyMatch(p -> p.)
+		if(players.stream().anyMatch(p -> p.)
 		
 		return true;
 		
