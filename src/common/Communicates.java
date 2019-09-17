@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 
 public interface Communicates {
 	
-	public static void sendMessage();
-	public static void receiveMessage();
+	public void sendMessage();
+	public void receiveMessage();
 	
 }

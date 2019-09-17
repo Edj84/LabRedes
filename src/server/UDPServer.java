@@ -7,7 +7,8 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 
-import server.Controller.*;
+import controller.*;
+
 
 class UDPServer implements common.Communicates{
 	
@@ -17,15 +18,21 @@ class UDPServer implements common.Communicates{
 	private static DatagramPacket receivedPacket;
 	private static byte[] receiveData;
 	
-	public static void main(String args[]) throws Exception{
-		serverSocket = new DatagramSocket(8080);
-	       
-	    while(true) {
-	    	receiveMessage();           
-       }
-   }
+	public UDPServer() {
+		playerManager = new PlayerManager();
+		commandManager = new CommandManager();
+		
+		try{
+			serverSocket = new DatagramSocket(8080);			
+		}
+
+		catch(SocketException e){
+			System.out.println("Unable to create server socket");
+		}
+
+	}
 	
-	public static void receiveMessage() {
+	public void receiveMessage() {
 		
         try {
 			serverSocket.receive(receivedPacket);
@@ -49,6 +56,14 @@ class UDPServer implements common.Communicates{
         InetAddress IPAddress = receivedPacket.getAddress();
         int port = receivedPacket.getPort();
 		
+	}
+
+	public void run() {
+
+		while(true){
+			receiveMessage();
+		}
+
 	}
 
 	
