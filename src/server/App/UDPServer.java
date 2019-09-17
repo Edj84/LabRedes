@@ -7,8 +7,12 @@ import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 
+import server.Controller.*;
+
 class UDPServer implements common.Communicates{
+	
 	private PlayerManager playerManager;
+	private CommandManager commandManager;
 	private static DatagramSocket serverSocket;
 	private static DatagramPacket receivedPacket;
 	private static byte[] receiveData;
@@ -21,7 +25,7 @@ class UDPServer implements common.Communicates{
        }
    }
 	
-	public void receiveMessage() {
+	public static void receiveMessage() {
 		
         try {
 			serverSocket.receive(receivedPacket);
@@ -33,12 +37,11 @@ class UDPServer implements common.Communicates{
 			System.out.println("Unable to receive package from client");
 		}
 
-        process();
+        process(receivedPacket);
 	}
 
-	private void process() {
-		// TODO Auto-generated method stub
-		
+	private void process(DatagramPacket packet) {
+		commandManager.process(packet);		
 	}
 
 	public void sendMessage() {

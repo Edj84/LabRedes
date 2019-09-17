@@ -9,9 +9,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-class UDPClient {
+import common.Communicates;
+
+public class UDPClient implements Communicates{
 	
-	private static String getFile(String filePath)
+    public void receiveMessage() {
+        
+    }
+
+    public void sendMessage() {
+        
+    }
+    
+    private static String getFile(String filePath)
 	{
 	    String content = "";
 	    try
@@ -25,8 +35,7 @@ class UDPClient {
 	    return content;
 	}
 	
-   public static void main(String args[]) throws Exception
-   {
+   public static void main(String args[]) throws Exception {
       // declara socket cliente
       DatagramSocket clientSocket = new DatagramSocket();
 
