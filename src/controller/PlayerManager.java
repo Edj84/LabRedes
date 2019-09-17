@@ -1,4 +1,4 @@
-package server.Controller;
+package controller;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ public class PlayerManager {
 	private ArrayList<Player> players;
 	
 	public void GerenciadorDeJogadores(){
+		
 	}
 	
 	public boolean login(Player player){
