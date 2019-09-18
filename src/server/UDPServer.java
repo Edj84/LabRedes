@@ -22,30 +22,30 @@ class UDPServer implements common.Communicates{
 		commandManager = new CommandManager();
 	}
 	
-	public void receiveMessage() {
+	public String receiveMessage() {
 		
         try {
 			receivedData = new byte[1024];
 			receivedPacket = new DatagramPacket(receivedData, receivedData.length);
 			serverSocket.receive(receivedPacket);
-			process(receivedPacket);
+			
+			String command = new String(receivedPacket.getData());
+			
+			return command;
 		} 
         
         catch (IOException e) {
 			System.out.println("Unable to receive package from client");
 		}
         
-	}
-
-	private void process(DatagramPacket packet) {
-		commandManager.process(packet);		
+		return "Error receiving message";
+        
 	}
 
 	public void sendMessage() {
 		String sentence = new String(receivedPacket.getData());
         InetAddress IPAddress = receivedPacket.getAddress();
-        int port = receivedPacket.getPort();
-		
+        int port = receivedPacket.getPort();		
 	}
 
 	public void run() {

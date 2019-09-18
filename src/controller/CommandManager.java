@@ -10,10 +10,7 @@ public class CommandManager {
     	 
     }
     	
-	public void process(DatagramPacket packet) {
-
-        //Ver projArq
-		String command = packet.getData().toString();
+	public void serverProcess(String command) {
 
         switch(command){
 
@@ -48,6 +45,36 @@ public class CommandManager {
         }
 
      }
+	
+	public void clientProcess(String command) {
+
+        switch(command){
+
+            case "PLAY":
+
+                break;
+            
+            case "ERROR":
+
+                break;
+
+            case "INFO":
+
+                break;
+            
+            case "SPEAK":
+            
+            case "WHISPER": 
+            
+            case "MAP": 
+            	break;
+            
+            default:
+
+        }
+
+     }
+
 
 }
 
