@@ -13,40 +13,28 @@ import common.Communicates;
 
 public class UDPClient implements Communicates{
 	
+	private DatagramSocket clientSocket; 
+	private boolean running;
+	private byte[] ipAddr;
+	private InetAddress IPAddress; 
+	private byte[] sendData;
+	
     public void receiveMessage() {
-        
+       
     }
 
     public void sendMessage() {
-        
+    	sendData = new byte[1024];
     }
     
-    private static String getFile(String filePath)
-	{
-	    String content = "";
-	    try
-	    {
-	        content = new String (Files.readAllBytes(new File(filePath).toPath()));
-	    }
-	    catch (IOException e)
-	    {
-	        e.printStackTrace();
-	    }
-	    return content;
-	}
+   
 	
    public static void main(String args[]) throws Exception {
-      // declara socket cliente
-      DatagramSocket clientSocket = new DatagramSocket();
+      
 
       // obtem endereço IP do servidor com o DNS
-      byte[] ipAddr = new byte[]{(byte) 10, (byte) 32, (byte) 143, (byte) 192};
-      InetAddress IPAddress = InetAddress.getByAddress(ipAddr);
-
-      byte[] sendData = new byte[1024];
+      
         
-      sendData = getFile("fileGrande.txt").getBytes();
-
       // cria pacote com o dado, o endereço do server e porta do servidor
       DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
 
@@ -56,4 +44,23 @@ public class UDPClient implements Communicates{
       // fecha o cliente
       clientSocket.close();
    }
+   
+   public void run() {
+		
+		try{
+			clientSocket = new DatagramSocket(8080);
+			InetAddress.getByAddress(ipAddr);
+			running = true;
+		
+			while(running)
+				receiveMessage();
+			
+			clientSocket.close();
+		}
+		
+		catch(SocketException e){
+				System.out.println("Unable to create server socket");
+		}
+					
+	}
 }
