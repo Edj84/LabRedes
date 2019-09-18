@@ -13,47 +13,66 @@ import common.Communicates;
 
 public class UDPClient implements Communicates{
 	
-    public void receiveMessage() {
+	private DatagramSocket clientSocket; 
+	private boolean running;
+	private InetAddress IPAddress;
+	private byte[] ipAddr;
+	private byte[] sendData;
+	private byte[] receivedData;
+	private static DatagramPacket receivedPacket;
+	private static DatagramPacket sendPacket;
+	
+    public String receiveMessage() {
+    	
+    	try {
+			receivedData = new byte[1024];
+			receivedPacket = new DatagramPacket(receivedData, receivedData.length);
+			clientSocket.receive(receivedPacket);
+			String message = new String(receivedPacket.getData(),0,receivedPacket.getLength());
+			
+			return message;		
+		} 
         
-    }
-
+        catch (IOException e) {
+			System.out.println("Unable to receive package from client");
+			return null;
+		}
+        
+	}
+    
     public void sendMessage() {
-        
+    	
+    	try {
+    		sendData = new byte[1024];
+        	sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
+    		clientSocket.send(sendPacket);
+		
+	    } catch (IOException e) {
+			System.out.println("Failed to send message");
+		}
+    	
+    }
+       
+    public void connect() {
+		
+		try{
+			clientSocket = new DatagramSocket(8080);
+			ipAddr = new byte[]{(byte) 10, (byte) 32, (byte) 162, (byte) 173};
+		    IPAddress = InetAddress.getByAddress(ipAddr);			
+		 }
+		
+		 catch(SocketException e){
+			System.out.println("Unable to connect to server");	
+		 }
+		
+		 catch(UnknownHostException e){
+			System.out.println("Unable to find server");
+		 }			
+	}
+    
+    public void endGame(String message) {
+    	clientSocket.close();
+    	System.out.println("Game is over. Thank you for playing!");		
     }
     
-    private static String getFile(String filePath)
-	{
-	    String content = "";
-	    try
-	    {
-	        content = new String (Files.readAllBytes(new File(filePath).toPath()));
-	    }
-	    catch (IOException e)
-	    {
-	        e.printStackTrace();
-	    }
-	    return content;
-	}
-	
-   public static void main(String args[]) throws Exception {
-      // declara socket cliente
-      DatagramSocket clientSocket = new DatagramSocket();
-
-      // obtem endereço IP do servidor com o DNS
-      byte[] ipAddr = new byte[]{(byte) 10, (byte) 32, (byte) 143, (byte) 192};
-      InetAddress IPAddress = InetAddress.getByAddress(ipAddr);
-
-      byte[] sendData = new byte[1024];
-        
-      sendData = getFile("fileGrande.txt").getBytes();
-
-      // cria pacote com o dado, o endereço do server e porta do servidor
-      DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
-
-      //envia o pacote
-      clientSocket.send(sendPacket);
-
-      // fecha o cliente
-      clientSocket.close();
-   }
 }

@@ -5,8 +5,6 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
-
 import controller.*;
 
 
@@ -16,56 +14,56 @@ class UDPServer implements common.Communicates{
 	private CommandManager commandManager;
 	private static DatagramSocket serverSocket;
 	private static DatagramPacket receivedPacket;
-	private static byte[] receiveData;
+	private static byte[] receivedData;
+	boolean running;
 	
 	public UDPServer() {
 		playerManager = new PlayerManager();
 		commandManager = new CommandManager();
-		
-		try{
-			serverSocket = new DatagramSocket(8080);			
-		}
-
-		catch(SocketException e){
-			System.out.println("Unable to create server socket");
-		}
-
 	}
 	
-	public void receiveMessage() {
+	public String receiveMessage() {
 		
         try {
+			receivedData = new byte[1024];
+			receivedPacket = new DatagramPacket(receivedData, receivedData.length);
 			serverSocket.receive(receivedPacket);
-			receiveData = new byte[1024];
-			receivedPacket = new DatagramPacket(receiveData, receiveData.length);
+			
+			String command = new String(receivedPacket.getData());
+			
+			return command;
 		} 
         
         catch (IOException e) {
 			System.out.println("Unable to receive package from client");
 		}
-
-        process(receivedPacket);
-	}
-
-	private void process(DatagramPacket packet) {
-		commandManager.process(packet);		
+        
+		return "Error receiving message";
+        
 	}
 
 	public void sendMessage() {
 		String sentence = new String(receivedPacket.getData());
         InetAddress IPAddress = receivedPacket.getAddress();
-        int port = receivedPacket.getPort();
-		
+        int port = receivedPacket.getPort();		
 	}
 
 	public void run() {
-
-		while(true){
-			receiveMessage();
+		
+		try{
+			serverSocket = new DatagramSocket(8080);
+			running = true;
+		
+			while(running)
+				receiveMessage();
+			
+			serverSocket.close();
 		}
-
+		
+		catch(SocketException e){
+				System.out.println("Unable to create server socket");
+		}
+					
 	}
-
-	
    
 }
