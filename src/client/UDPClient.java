@@ -40,10 +40,12 @@ public class UDPClient implements Communicates{
         
 	}
     
-    public void sendMessage() {
+    public void sendMessage(String message) {
+    	 	
     	
     	try {
-    		sendData = new byte[1024];
+    		sendData = new byte[2048];
+    		sendData = message.getBytes();
         	sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
     		clientSocket.send(sendPacket);
 		
@@ -74,5 +76,7 @@ public class UDPClient implements Communicates{
     	clientSocket.close();
     	System.out.println("Game is over. Thank you for playing!");		
     }
+
+	
     
 }

@@ -2,7 +2,7 @@ package client;
 
 import java.util.Scanner;
 
-public class Interface {
+public class View {
 	
 	public static void title() {
 		System.out.println("####################");
@@ -30,6 +30,10 @@ public class Interface {
 		user = sc.next();
 		
 		System.out.println("\n\nSeu nome é... " + user);
+	}
+	
+	public static void displayMessage(String message) {
+		
 	}
 
 }

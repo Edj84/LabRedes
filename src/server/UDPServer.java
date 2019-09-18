@@ -10,7 +10,7 @@ import controller.*;
 
 class UDPServer implements common.Communicates{
 	
-	private PlayerManager playerManager;
+	//private PlayerManager playerManager;
 	private CommandManager commandManager;
 	private static DatagramSocket serverSocket;
 	private static DatagramPacket receivedPacket;
@@ -18,7 +18,7 @@ class UDPServer implements common.Communicates{
 	boolean running;
 	
 	public UDPServer() {
-		playerManager = new PlayerManager();
+		//playerManager = new PlayerManager();
 		commandManager = new CommandManager();
 	}
 	
@@ -42,7 +42,7 @@ class UDPServer implements common.Communicates{
         
 	}
 
-	public void sendMessage() {
+	public void sendMessage(String message) {
 		String sentence = new String(receivedPacket.getData());
         InetAddress IPAddress = receivedPacket.getAddress();
         int port = receivedPacket.getPort();		

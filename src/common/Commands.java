@@ -1,15 +1,29 @@
 package common;
 
+import java.util.ArrayList;
+import java.util.Set;
 
-public class Commands{
+public final class Commands{
 	
-	enum Command {
-
-		EXAMINAR, MOVER, PEGAR, LARGAR, INVENTORIO, USAR, FALAR, COCHICAR, AJUDA
+	private ArrayList<String> commandList; 
+	
+	private Commands(){
+		commandList = new ArrayList<String>();
+		commandList.add("EXAMINAR");
+		commandList.add("MOVER");
+		commandList.add("PEGAR"); 
+		commandList.add("LARGAR");
+		commandList.add("INVENTORIO");
+		commandList.add("USAR");
+		commandList.add("FALAR"); 
+		commandList.add("COCHICAR");
+		commandList.add("AJUDA");
 	}
 	
-	public Commands(){
-		
+	public boolean contains(String command) {
+		if(commandList.contains(command))
+				return true;
+		else return false;
 	}
 	
 }

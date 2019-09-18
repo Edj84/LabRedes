@@ -1,9 +1,7 @@
 package model;
 
 public class Player {
-    private boolean map;
-    private ArrayList<Key> keys;
-    private String id;
+    
 
     public Player (ArrayList<Key> keys, String id){
         this.temMapa = false;
@@ -37,5 +35,9 @@ public class Player {
 
     public void openDoor(){
         
+    }
+    
+    public String getStatus() {
+    	
     }
 }
