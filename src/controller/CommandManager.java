@@ -1,16 +1,12 @@
 package controller;
-import java.net.DatagramPacket;
-import java.util.ArrayList;
-import common.*;
 
-public class CommandManager {
+public final class CommandManager {
 	
+	public CommandManager() {
+		
+	}
 	
-    public CommandManager(){
-    	 
-    }
-    	
-	public void serverProcess(String command) {
+	public static void serverProcess(String command) {
 
         switch(command){
 
@@ -46,36 +42,6 @@ public class CommandManager {
 
      }
 	
-	public void clientProcess(String command) {
-
-        switch(command){
-
-            case "PLAY":
-
-                break;
-            
-            case "ERROR":
-
-                break;
-
-            case "INFO":
-
-                break;
-            
-            case "SPEAK":
-            
-            case "WHISPER": 
-            
-            case "MAP": 
-            	break;
-            
-            default:
-
-        }
-
-     }
-
-
 }
 
 

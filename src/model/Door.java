@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Door{
     private String id;
     private String description;
@@ -14,18 +16,19 @@ public class Door{
     }
 
     public String getId(){
-
+		return id;
     }
 
     public String getDescription(){
+		return description;
 
     }
 
     public ArrayList<Key> getRequirements(){
-
+    	return requirements;
     }
 
     public boolean checkClosed(){
-
+    	return closed;
     }
 }
