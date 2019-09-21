@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Connection{
     private String id;
     private Door door;
@@ -12,15 +14,16 @@ public class Connection{
     }
 
     public String getId(){
-
+		return id;
     }
 
     public String getDescription(){
+		return null;
 
     }
 
-    public ArrayList<Rooms> getRooms(){
-
+    public ArrayList<Room> getRooms(){
+		return rooms;
     }
 
     public void passThrough(){

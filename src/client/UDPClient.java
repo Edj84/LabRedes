@@ -2,81 +2,68 @@ package client;
 
 // Envia o pacote contendo um arquivo ao servidor
 
-import java.io.*; // classes para input e output streams e
 import java.net.*;// DatagramaSocket,InetAddress,DatagramaPacket
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.math.BigInteger;
 
-import common.Communicates;
-
-public class UDPClient implements Communicates{
-	
-	private DatagramSocket clientSocket; 
-	private boolean running;
-	private InetAddress IPAddress;
+public class UDPClient {
+	private int id;
+	private DatagramSocket clientSocket;
 	private byte[] ipAddr;
+	private InetAddress IPAddress;
 	private byte[] sendData;
-	private byte[] receivedData;
-	private static DatagramPacket receivedPacket;
-	private static DatagramPacket sendPacket;
+	private DatagramPacket sendPacket;
+	private byte[] receiveData;
+	private DatagramPacket receivePacket;
 	
-    public String receiveMessage() {
-    	
-    	try {
-			receivedData = new byte[1024];
-			receivedPacket = new DatagramPacket(receivedData, receivedData.length);
-			clientSocket.receive(receivedPacket);
-			String message = new String(receivedPacket.getData(),0,receivedPacket.getLength());
-			
-			return message;		
+	public UDPClient(int id){
+		this.id = id;
+		ipAddr = new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1};
+		try {
+			IPAddress = InetAddress.getByAddress(ipAddr);
+			clientSocket = new DatagramSocket(9090);
 		} 
-        
-        catch (IOException e) {
-			System.out.println("Unable to receive package from client");
-			return null;
-		}
-        
-	}
-    
-    public void sendMessage(String message) {
-    	 	
-    	
-    	try {
-    		sendData = new byte[2048];
-    		sendData = message.getBytes();
-        	sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
-    		clientSocket.send(sendPacket);
 		
-	    } catch (IOException e) {
-			System.out.println("Failed to send message");
-		}
-    	
-    }
-       
-    public void connect() {
-		
-		try{
-			clientSocket = new DatagramSocket(8080);
-			ipAddr = new byte[]{(byte) 10, (byte) 32, (byte) 162, (byte) 173};
-		    IPAddress = InetAddress.getByAddress(ipAddr);			
-		 }
-		
-		 catch(SocketException e){
-			System.out.println("Unable to connect to server");	
-		 }
-		
-		 catch(UnknownHostException e){
+		catch (UnknownHostException e) {
 			System.out.println("Unable to find server");
-		 }			
+		} 
+		
+		catch (SocketException e) {
+			System.out.println("Unable to open socket");
+		}
 	}
-    
-    public void endGame(String message) {
-    	clientSocket.close();
-    	System.out.println("Game is over. Thank you for playing!");		
-    }
-
 	
-    
+	public int getId() {
+		return id;
+	}
+	
+	public void sendCommand(String command) throws IOException {
+		
+	      sendData = new byte[1024];
+	      sendData = command.getBytes();
+	      sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
+	      clientSocket.send(sendPacket);
+	      System.out.println("Enviado " + command);
+	}
+	
+	public String receiveMessage() {
+		
+		String serverMessage = null;
+		
+			try {	            		     	
+				receiveData = new byte[1024];
+				receivePacket = new DatagramPacket(receiveData, receiveData.length);
+				clientSocket.receive(receivePacket);
+				receiveData = receivePacket.getData();
+				serverMessage = new String(receiveData);
+				System.out.println("Message from server: " + serverMessage);
+			}
+			
+			catch (IOException e) {
+				System.out.println("Unable to receive message from server");
+			}			
+		
+		return serverMessage; 
+	}
+	
 }

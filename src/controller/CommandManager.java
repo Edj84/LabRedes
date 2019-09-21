@@ -42,36 +42,6 @@ public final class CommandManager {
 
      }
 	
-	public static void clientProcess(String command) {
-
-        switch(command){
-
-            case "PLAY":
-            	
-                break;
-            
-            case "ERROR":
-
-                break;
-
-            case "INFO":
-
-                break;
-            
-            case "SPEAK":
-            
-            case "WHISPER": 
-            
-            case "MAP": 
-            	break;
-            
-            default:
-
-        }
-
-     }
-
-
 }
 
 

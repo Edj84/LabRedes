@@ -1,69 +1,69 @@
 package server;
-// Recebe um pacote de algum cliente
-// Separa o dado, o endere�o IP e a porta deste cliente
-// Imprime o dado na tela
 
-import java.io.*;
+
+import java.io.IOException;
 import java.net.*;
-import controller.*;
 
-
-class UDPServer implements common.Communicates{
+public class UDPServer {
 	
-	//private PlayerManager playerManager;
-	private CommandManager commandManager;
+	//Gerenciador de players
+	private static InetAddress clientIPAddress;
+	
 	private static DatagramSocket serverSocket;
-	private static DatagramPacket receivedPacket;
-	private static byte[] receivedData;
-	boolean running;
+	private static byte[] sendData;
+	private static DatagramPacket sendPacket;
+	private static byte[] receiveData;
+	private static DatagramPacket receivePacket;
+	private static GerenciadorDeLances gerLances;
+	private static boolean running;
 	
-	public UDPServer() {
-		//playerManager = new PlayerManager();
-		commandManager = new CommandManager();
-	}
-	
-	public String receiveMessage() {
+	public static void main(String args[]) throws Exception {
 		
-        try {
-			receivedData = new byte[1024];
-			receivedPacket = new DatagramPacket(receivedData, receivedData.length);
-			serverSocket.receive(receivedPacket);
+		running = true;
+		System.out.println("Let the game begin!");
+		serverSocket = new DatagramSocket(8080);        
+        gerLances = new GerenciadorDeLances();
+		
+		while(running) 
+			listen();
+	}
 			
-			String command = new String(receivedPacket.getData());
-			
-			return command;
+	private static void listen() {
+		
+		receiveData = new byte[1024];
+		try {	            		     	
+	    	receivePacket = new DatagramPacket(receiveData, receiveData.length);
+	    	serverSocket.receive(receivePacket);            	    
+	    	clientIPAddress = receivePacket.getAddress();
+	    	running = gerLances.receberLance(receivePacket);
+	    	
+	    	if(running)
+	    		sendMessage("RESPOSTA AO CLIENTE");	    		
+    	}
+    
+        catch(SocketException e) {
+			System.out.println("Game over!");
 		} 
-        
-        catch (IOException e) {
-			System.out.println("Unable to receive package from client");
-		}
-        
-		return "Error receiving message";
-        
-	}
-
-	public void sendMessage(String message) {
-		String sentence = new String(receivedPacket.getData());
-        InetAddress IPAddress = receivedPacket.getAddress();
-        int port = receivedPacket.getPort();		
-	}
-
-	public void run() {
 		
-		try{
-			serverSocket = new DatagramSocket(8080);
-			running = true;
-		
-			while(running)
-				receiveMessage();
-			
-			serverSocket.close();
+		catch (IOException e) {
+			System.out.println("Unable to get package from client");
 		}
-		
-		catch(SocketException e){
-				System.out.println("Unable to create server socket");
-		}
-					
 	}
-   
+	
+	private static void sendMessage(String message) {
+		sendData = new byte[1024];
+	    sendData = message.getBytes();
+	    
+	    try {
+	    	
+	    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 9090);
+			serverSocket.send(sendPacket);
+		} 
+	    catch (IOException e) {
+			System.out.println("Unable to send response to client");
+		}
+	}
+	
 }
+    	
+    
