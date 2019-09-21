@@ -6,11 +6,15 @@ public final class CommandManager {
 		
 	}
 	
-	public static void serverProcess(String command) {
+	public static void process(String command) {
 
-        switch(command){
+        switch(command.toUpperCase()){
 
-            case "EXAMINAR":
+        	case "LOGIN":
+        		
+        		break;
+        		
+        	case "EXAMINAR":
 
                 break;
             

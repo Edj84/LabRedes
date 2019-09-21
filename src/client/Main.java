@@ -8,11 +8,13 @@ import javax.sound.midi.Receiver;
 public class Main {
 	
 	private static UDPClient player;
+	private static View userInterface;
 	
 	public static void main(String[] args) throws IOException {
-		criarParticipante();
+		init();
 		
 		int n = 1;
+		
 		while(true) { 
 			sendCommand("Comando " + n++);
 			receiveMessage();
@@ -20,14 +22,19 @@ public class Main {
 				
 	}
 	
-	private static void criarParticipante() {
-		
-			int id = randomGenerator(100,1000);
-			player = new UDPClient(id);				
+	private static void init() {
+		userInterface = new View();
+		userInterface.welcome();
+	
+	}
+	
+	private static void createLogin() throws IOException {
+		String login = userInterface.login();
+		sendCommand(login);
+		player = new UDPClient(login);				
 	}
 	
 	private static void sendCommand(String command) throws IOException {
-		
 		player.sendCommand(command);		
 	}
 	

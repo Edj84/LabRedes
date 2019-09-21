@@ -4,10 +4,9 @@ package client;
 
 import java.net.*;// DatagramaSocket,InetAddress,DatagramaPacket
 import java.io.IOException;
-import java.math.BigInteger;
 
 public class UDPClient {
-	private int id;
+	private String id;
 	private DatagramSocket clientSocket;
 	private byte[] ipAddr;
 	private InetAddress IPAddress;
@@ -16,8 +15,8 @@ public class UDPClient {
 	private byte[] receiveData;
 	private DatagramPacket receivePacket;
 	
-	public UDPClient(int id){
-		this.id = id;
+	public UDPClient(String login){
+		this.id = login;
 		ipAddr = new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1};
 		try {
 			IPAddress = InetAddress.getByAddress(ipAddr);
@@ -33,7 +32,7 @@ public class UDPClient {
 		}
 	}
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 	

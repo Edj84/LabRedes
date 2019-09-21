@@ -1,9 +1,10 @@
 package controller;
 
 import java.util.ArrayList;
+import model.Player;
 
 
-public class PlayerManager {
+public final class PlayerManager {
 	
 	private ArrayList<Player> players;
 	
@@ -13,10 +14,13 @@ public class PlayerManager {
 	
 	public boolean login(Player player){
 		
-		if(players.stream().anyMatch(p -> p.)
-		
-		return true;
-		
+		return players.stream().anyMatch(p -> p.getId().equals(player.getId()));
 	}
+	
+	public boolean login(Player player){
+		
+		return players.stream().anyMatch(p -> p.getId().equals(player.getId()));
+	}
+	
 
 }
