@@ -42,10 +42,10 @@ public class Main {
 		System.out.println(player.receiveMessage());
 	}
 	
-	private static int randomGenerator(int min, int max){
+	/*private static int randomGenerator(int min, int max){
 		Random randomGenerator = new Random();
 		int randomInt = randomGenerator.nextInt(max-min) + min;
 		return randomInt;
 	}
-	
+	*/
 }

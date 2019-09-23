@@ -1,5 +1,5 @@
 package model;
 
-public class Map extends AbstractObject{
+public class Map {
 
 }

@@ -4,6 +4,9 @@ package server;
 import java.io.IOException;
 import java.net.*;
 
+import controller.*;
+import model.Player;
+
 public class UDPServer {
 	
 	//Gerenciador de players
@@ -14,7 +17,9 @@ public class UDPServer {
 	private static DatagramPacket sendPacket;
 	private static byte[] receiveData;
 	private static DatagramPacket receivePacket;
-	private static GerenciadorDeLances gerLances;
+	private static Player player;
+	private static String command;
+	
 	private static boolean running;
 	
 	public static void main(String args[]) throws Exception {
@@ -22,8 +27,7 @@ public class UDPServer {
 		running = true;
 		System.out.println("Let the game begin!");
 		serverSocket = new DatagramSocket(8080);        
-        gerLances = new GerenciadorDeLances();
-		
+    	
 		while(running) 
 			listen();
 	}
@@ -35,7 +39,8 @@ public class UDPServer {
 	    	receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	    	serverSocket.receive(receivePacket);            	    
 	    	clientIPAddress = receivePacket.getAddress();
-	    	running = gerLances.receberLance(receivePacket);
+	    	splitPackage(receivePacket);
+	    	running = CommandManager.process(player, command);
 	    	
 	    	if(running)
 	    		sendMessage("RESPOSTA AO CLIENTE");	    		
@@ -50,6 +55,13 @@ public class UDPServer {
 		}
 	}
 	
+	private static void splitPackage(DatagramPacket receivePacket) {
+		byte[] data = receivePacket.getData();
+		String[] words = new String(data).split("#");
+		playerID = words[0];
+		command = words[1];		
+	}
+
 	private static void sendMessage(String message) {
 		sendData = new byte[1024];
 	    sendData = message.getBytes();

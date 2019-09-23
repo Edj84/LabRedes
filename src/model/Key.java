@@ -1,15 +1,15 @@
 package model;
 
-public class Key {
-    private String id;
+public class Key extends AbstractObject {
+    private static int id = 0;
     private String description;
 
-    public Key(String id, String description){
-        this.id = id;
+    public Key(int id, String description){
+        this.id = ++id;
         this.description = description;
     }
 
-    public String getId(){
+    public int getId(){
         return id;
     }
     

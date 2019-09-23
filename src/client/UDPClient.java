@@ -38,11 +38,12 @@ public class UDPClient {
 	
 	public void sendCommand(String command) throws IOException {
 		
-	      sendData = new byte[1024];
-	      sendData = command.getBytes();
-	      sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
-	      clientSocket.send(sendPacket);
-	      System.out.println("Enviado " + command);
+		String message = id + "#" + command;
+		sendData = new byte[1024];
+	    sendData = message.getBytes();
+	    sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
+	    clientSocket.send(sendPacket);
+	    System.out.println("Enviado " + command);
 	}
 	
 	public String receiveMessage() {
