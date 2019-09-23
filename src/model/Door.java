@@ -9,7 +9,7 @@ public class Door extends AbstractObject {
     private Room[] connection;
     private boolean closed;
 
-    public Door (int id, String description, ArrayList<Key> requirements, boolean closed){
+    public Door (String description, ArrayList<Key> requirements, boolean closed){
         this.id = ++id;
         this.description = description;
         this.requirements = requirements;

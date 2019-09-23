@@ -9,18 +9,49 @@ public class Main {
 	
 	private static UDPClient clientSocket;
 	private static View userInterface;
+	private static String command = null;
+	private static boolean running = true;
 	
 	public static void main(String[] args) throws IOException {
-		clientSocket = new UDPClient(9091);
+		clientSocket = new UDPClient(9090);
 		init();
 		login();
 		
-		while(true) { 
-			send(userInterface.prompt());
-			receiveMessage();
+		new Thread(send).start();
+		new Thread(receive).start();	
+		
+		while(true) {
+			send.run();
+			receive.run();
 		}
-			
 	}
+	
+	private static Runnable send = new Runnable() {
+        public void run() {
+            try{
+            	command = userInterface.prompt();
+            	clientSocket.send(command);		
+            }
+            
+            catch (Exception e){
+            	System.out.println("Unable to run send thread");
+            }
+           
+        }
+	};
+        
+     private static Runnable receive = new Runnable() {
+    	 public void run() {
+    		 try{
+    			 System.out.println(clientSocket.receive());		
+             }
+                
+             catch (Exception e){
+            	 System.out.println("Unable to run receive thread");
+             }
+               
+        }
+     };
 	
 	private static void init() {
 		userInterface = new View();
@@ -32,14 +63,19 @@ public class Main {
 		send(login);
 		receiveMessage();
 	}
-	
-	private static void send(String command) throws IOException {
-		clientSocket.send(command);		
-	}
-	
+
 	private static void receiveMessage() {
-		System.out.println(clientSocket.receive());
+		System.out.println(clientSocket.receive());			
 	}
-	
+
+	private static void send(String login) {
+		try {
+			clientSocket.send(login);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}		
+	}
+		
 }
 		

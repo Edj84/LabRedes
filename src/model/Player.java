@@ -10,11 +10,11 @@ public class Player {
 	private ArrayList<AbstractObject> backPack;
 	private Room location;
 
-    public Player (String id, InetAddress IPAddress){
+    public Player (String id, InetAddress IPAddress, Map map){
         this.id = id;
         this.IPAddress = IPAddress;
         this.backPack = new ArrayList<AbstractObject>();
-        this.location = null;
+        this.location = Map.;
     }
     
     public String getId() {

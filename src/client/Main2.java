@@ -11,7 +11,7 @@ public class Main2 {
 	private static View userInterface;
 	
 	public static void main(String[] args) throws IOException {
-		clientSocket = new UDPClient(9090);
+		clientSocket = new UDPClient(9091);
 		init();
 		login();
 		

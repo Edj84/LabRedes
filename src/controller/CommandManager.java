@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import model.AbstractObject;
+import model.Map;
 import model.Player;
 import model.Response;
 import model.Room;
 
 public final class CommandManager {
 	
-	public static Response process(Player player, String command) {
+	public static Response process(Player player, String command, Map map) {
 		
 		Response response = null;
 				
@@ -23,7 +24,7 @@ public final class CommandManager {
 		switch(words[0]) {
 		
 			case "LOGIN":
-        		PlayerManager.login(player.getId(), player.getIPAddress());
+        		PlayerManager.login(player.getId(), player.getIPAddress(), map);
         		response = (new Response("Bem vindo, " + player.getId()));
         		break;
         	

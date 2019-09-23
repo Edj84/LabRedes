@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import model.Map;
 import model.Player;
 import model.Room;
 
@@ -44,13 +45,13 @@ public final class PlayerManager {
 				.anyMatch(p -> p.getId().equals(login));
 	}
 	
-	public static Player createLogin(String login, InetAddress IPAdress) {
+	public static Player createLogin(String login, InetAddress IPAdress, Map map) {
 		System.out.println("Criando login do jogador " + login);
-		Player newPlayer = new Player(login, IPAdress);		
+		Player newPlayer = new Player(login, IPAdress, map);		
 		return newPlayer;
 	}
 	
-	public static void login(String login, InetAddress IPAddress) {
+	public static void login(String login, InetAddress IPAddress, Map map) {
 		Player aux = null;
 		
 		if(loginExists(login)) {
@@ -64,7 +65,7 @@ public final class PlayerManager {
 		}			
 		
 		else {			
-			aux = createLogin(login, IPAddress);
+			aux = createLogin(login, IPAddress, map);
 			players.add(aux);		
 		}
 		

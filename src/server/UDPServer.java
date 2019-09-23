@@ -6,6 +6,7 @@ import java.net.*;
 import java.util.ArrayList;
 
 import controller.*;
+import model.Map;
 import model.Player;
 import model.Response;
 
@@ -16,13 +17,15 @@ public class UDPServer {
 	private static byte[] sendData;
 	private static DatagramPacket sendPacket;
 	private static byte[] receiveData;
-		private static Player player;
+	private static Player player;
 	private static String command;
+	private static Map map;
 	
 	private static boolean running;
 	
 	public static void main(String args[]) throws Exception {
 		
+		create();
 		running = true;
 		System.out.println("Let the game begin!");
 		serverSocket = new DatagramSocket(8080);        
@@ -31,6 +34,10 @@ public class UDPServer {
 			listen();
 	}
 			
+	private static void create() {		
+		
+	}
+
 	private static void listen() {
 		
 		receiveData = new byte[1024];
@@ -39,7 +46,7 @@ public class UDPServer {
 	    	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	    	serverSocket.receive(receivePacket);            	   
 	    	String[] message = splitPackage(receivePacket);   	
-	    	Response response = process(receivePacket, message);
+	    	Response response = process(receivePacket, message, map);
 	    	
 	    	send(receivePacket, response);
 	    	
@@ -70,7 +77,7 @@ public class UDPServer {
 		return new String(data).trim().getBytes();		
 	}
 
-	private static Response process(DatagramPacket receivePacket, String[] message) {
+	private static Response process(DatagramPacket receivePacket, String[] message, Map map) {
 	
 		String command = message[0];
 		System.out.println(command);
