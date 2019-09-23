@@ -28,7 +28,16 @@ public class View {
 		System.out.println("Para começar, insira seu nome de usuário.");
 		System.out.print("Usuário: ");
 		
-		return scan.next();		
+		String login = scan.nextLine();
+		return "LOGIN " + login.toUpperCase().trim();		
 	}
-
+	
+	public String prompt() {
+		scan = new Scanner(System.in);
+		
+		System.out.println("O que você quer fazer?");
+		String text = scan.nextLine();
+		
+		return text.toUpperCase();		
+	}
 }

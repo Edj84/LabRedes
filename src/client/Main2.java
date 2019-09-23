@@ -5,13 +5,13 @@ import java.util.Random;
 
 import javax.sound.midi.Receiver;
 
-public class Main {
+public class Main2 {
 	
 	private static UDPClient clientSocket;
 	private static View userInterface;
 	
 	public static void main(String[] args) throws IOException {
-		clientSocket = new UDPClient(9091);
+		clientSocket = new UDPClient(9090);
 		init();
 		login();
 		

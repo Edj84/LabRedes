@@ -6,7 +6,7 @@ import java.net.*;// DatagramaSocket,InetAddress,DatagramaPacket
 import java.io.IOException;
 
 public class UDPClient {
-	private String id;
+	private String ID;
 	private DatagramSocket clientSocket;
 	private byte[] ipAddr;
 	private InetAddress IPAddress;
@@ -14,13 +14,13 @@ public class UDPClient {
 	private DatagramPacket sendPacket;
 	private byte[] receiveData;
 	private DatagramPacket receivePacket;
-	
-	public UDPClient(String login){
-		this.id = login;
+		
+	public UDPClient(int port){
+		
 		ipAddr = new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1};
 		try {
 			IPAddress = InetAddress.getByAddress(ipAddr);
-			clientSocket = new DatagramSocket(9090);
+			clientSocket = new DatagramSocket(port);
 		} 
 		
 		catch (UnknownHostException e) {
@@ -32,38 +32,41 @@ public class UDPClient {
 		}
 	}
 	
-	public String getId() {
-		return id;
+	public String getID() {
+		return ID;
 	}
 	
-	public void sendCommand(String command) throws IOException {
+	public void setID(String ID) {
+		this.ID = ID;
+	}
+	
+	public void send(String message) throws IOException {
 		
-		String message = id + "#" + command;
 		sendData = new byte[1024];
 	    sendData = message.getBytes();
 	    sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
 	    clientSocket.send(sendPacket);
-	    System.out.println("Enviado " + command);
+	    System.out.println("Enviado " + message);
 	}
 	
-	public String receiveMessage() {
+	public String receive() {
 		
-		String serverMessage = null;
+		String serverContent = null;
 		
 			try {	            		     	
 				receiveData = new byte[1024];
 				receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				clientSocket.receive(receivePacket);
 				receiveData = receivePacket.getData();
-				serverMessage = new String(receiveData);
-				System.out.println("Message from server: " + serverMessage);
+				serverContent = new String(receiveData);
+				System.out.println("Message from server: " + serverContent);
 			}
 			
 			catch (IOException e) {
 				System.out.println("Unable to receive message from server");
 			}			
 		
-		return serverMessage; 
+		return serverContent; 
 	}
 	
 }

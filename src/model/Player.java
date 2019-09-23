@@ -42,7 +42,7 @@ public class Player {
     	backPack.remove(item);
     }
     
-    public AbstractObject getLocation() {
+    public Room getLocation() {
     	return location;
     }
     
