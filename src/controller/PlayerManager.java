@@ -18,19 +18,15 @@ public final class PlayerManager {
 		
 	public static Player getPlayerByID(String login) {
 		
-		if(loginExists(login)) {
-			System.out.println("Jogador " + login + " encontrado");
-		
-			return players.stream()
+		Player aux = players.stream()
 			.filter(p -> p.getId().equals(login))
 			.findFirst().get();
-		}
 		
-		else {
-			System.out.println("Jogador " + login + " não encontrado");
+		if(aux != null)
+			return aux;
+	
+		else 
 			return null;
-		}
-		
 	}	
 	
 	public static ArrayList<Player> getPlayersInRoom(Room location){
@@ -38,39 +34,18 @@ public final class PlayerManager {
 				.filter(p -> p.getLocation() == location)
 				.collect(Collectors.toList());
 	}
-	
-	private static boolean loginExists(String login){
 		
-		return players.stream()
-				.anyMatch(p -> p.getId().equals(login));
+	public static Player login(String login, InetAddress IPAddress) {
+		
+		Player aux = new Player(login, IPAddress);
+		players.add(aux);
+		return aux;		
 	}
 	
-	public static Player createLogin(String login, InetAddress IPAdress, Map map) {
-		System.out.println("Criando login do jogador " + login);
-		Player newPlayer = new Player(login, IPAdress, map);		
-		return newPlayer;
+	public static void logout(String login) {
+		
+		Player aux = getPlayerByID(login);
+		players.remove(aux);
 	}
 	
-	public static void login(String login, InetAddress IPAddress, Map map) {
-		Player aux = null;
-		
-		if(loginExists(login)) {
-			aux = players.stream()
-			.filter(p -> p.getId().equals(login))
-			.findFirst().get();
-			
-			aux.setIPAddress(IPAddress);
-			
-			System.out.println("Jogador " + login + " fez login de novo");
-		}			
-		
-		else {			
-			aux = createLogin(login, IPAddress, map);
-			players.add(aux);		
-		}
-		
-	}
-
-	
-		
 }

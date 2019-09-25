@@ -30,7 +30,7 @@ public class Main {
         public void run() {
             try{
             	command = userInterface.prompt();
-            	clientSocket.send(command);		
+            	send(command);		
             }
             
             catch (Exception e){
@@ -43,7 +43,7 @@ public class Main {
      private static Runnable receive = new Runnable() {
     	 public void run() {
     		 try{
-    			 System.out.println(clientSocket.receive());		
+    			 receiveMessage();		
              }
                 
              catch (Exception e){

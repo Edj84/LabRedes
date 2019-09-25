@@ -10,11 +10,10 @@ public class Player {
 	private ArrayList<AbstractObject> backPack;
 	private Room location;
 
-    public Player (String id, InetAddress IPAddress, Map map){
+    public Player (String id, InetAddress IPAddress){
         this.id = id;
         this.IPAddress = IPAddress;
-        this.backPack = new ArrayList<AbstractObject>();
-        this.location = Map.;
+        this.backPack = new ArrayList<AbstractObject>();        
     }
     
     public String getId() {
@@ -42,12 +41,13 @@ public class Player {
     	backPack.remove(item);
     }
     
-    public Room getLocation() {
-    	return location;
-    }
     
     public void setIPAddress(InetAddress newIPAddress) {
     	this.IPAddress = newIPAddress;
+    }
+    
+    public Room getLocation() {
+    	return location;
     }
     
     public void setLocation(Room location) {

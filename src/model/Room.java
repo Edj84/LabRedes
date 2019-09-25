@@ -11,6 +11,7 @@ public class Room extends AbstractObject {
     private String description;
     private ArrayList<AbstractObject> items;
     private ArrayList<Player> players;
+	public String color;
 
     public Room (Door north, Door south, Door east, Door west, String description, ArrayList<AbstractObject> objects, ArrayList<Player> players){
         this.id = ++id;
@@ -21,6 +22,7 @@ public class Room extends AbstractObject {
         this.description = description;
         this.items = items;
         this.players = players;
+        this.color = "COR " + String.valueOf(id);
     }
     
     public String getDescription() {
@@ -34,8 +36,9 @@ public class Room extends AbstractObject {
     public ArrayList<AbstractObject> getItems(){
     	return items;
     }
-    
-    
 
-
+	public String getColor() {
+		return color;
+	}
+    
 }

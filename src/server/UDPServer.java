@@ -4,6 +4,7 @@ package server;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 import controller.*;
 import model.Map;
@@ -25,17 +26,19 @@ public class UDPServer {
 	
 	public static void main(String args[]) throws Exception {
 		
-		create();
+		createWorld();
 		running = true;
 		System.out.println("Let the game begin!");
 		serverSocket = new DatagramSocket(8080);        
-    	
+		Random rand = new Random();
+		
 		while(running) 
 			listen();
+		
 	}
 			
-	private static void create() {		
-		
+	private static void createWorld() {		
+		map = new Map();
 	}
 
 	private static void listen() {
@@ -45,8 +48,8 @@ public class UDPServer {
 		try {	            		     	
 	    	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	    	serverSocket.receive(receivePacket);            	   
-	    	String[] message = splitPackage(receivePacket);   	
-	    	Response response = process(receivePacket, message, map);
+	    	String[] command = splitPackage(receivePacket);   	
+	    	Response response = process(receivePacket, command);
 	    	
 	    	send(receivePacket, response);
 	    	
@@ -65,11 +68,10 @@ public class UDPServer {
 		
 		byte[] data = receivePacket.getData();
 		data = cleanBlankSpaces(data);		
-		String command = new String(data);
-		String[] words = new String(data).split("\\s");
+		String text = new String(data);
+		String[] command = new String(data).split("\\s");
 				
-		return words;
-		
+		return command;		
 	}
 	
 	private static byte[] cleanBlankSpaces(byte[] data) {
@@ -77,23 +79,12 @@ public class UDPServer {
 		return new String(data).trim().getBytes();		
 	}
 
-	private static Response process(DatagramPacket receivePacket, String[] message, Map map) {
-	
-		String command = message[0];
-		System.out.println(command);
+	private static Response process(DatagramPacket receivePacket, String[] message) {
 		
-		String playerID = message[1];
-		System.out.println(playerID);
-		player = PlayerManager.getPlayerByID(playerID);
-		if(player == null) {
-			clientIPAddress = receivePacket.getAddress();
-			player = PlayerManager.createLogin(playerID, clientIPAddress);
-		}	
-		
-		Response response = CommandManager.process(player, command);
+		Response response = CommandManager.process(receivePacket, message);
 		
 		return response;
-}
+	}
 	
 	private static void send(DatagramPacket receivePacket, Response response) {
 		

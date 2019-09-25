@@ -1,13 +1,16 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
 
 public class Map {
 	
-	ArrayList<Room> rooms;
+	private static ArrayList<Room> rooms;
 	
-	public Map(ArrayList rooms) {
-		this.rooms = rooms;
+	public Map() {
+		
+		rooms = new ArrayList<Room>();
 		
 		Door redDoor = new Door("Vermelha", null, false);
 		Door blueDoor = new Door("Azul", null, false);
@@ -23,6 +26,13 @@ public class Map {
 		
 	}
 	
+	public static Room getRandomRoom() {
+		
+		Room start = rooms.parallelStream()
+					.findAny().get();
+		
+		return start;		
+	}
 	
 	
 }

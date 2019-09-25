@@ -3,6 +3,7 @@ package controller;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 import model.AbstractObject;
 import model.Map;
@@ -12,23 +13,40 @@ import model.Room;
 
 public final class CommandManager {
 	
-	public static Response process(Player player, String command, Map map) {
+	public static Response process(DatagramPacket receivePacket, String[] command) {
 		
 		Response response = null;
+		
+		String verb = command[0];
+		System.out.println(verb);
+		
+		String params = command[1];
+		System.out.println(params);
 				
-		String[] words = command.split("\\s");
+		String[] particles = params.split("\\s");
 		
-		for(String w : words)
-				System.out.println("Word is " + w);
+		for(String p : particles)
+				System.out.println("Particle is " + p);
 		
-		switch(words[0]) {
+		StringBuilder sb = new StringBuilder();
 		
+		boolean sucess = true; 
+		
+		switch(verb) {
+			
 			case "LOGIN":
-        		PlayerManager.login(player.getId(), player.getIPAddress(), map);
-        		response = (new Response("Bem vindo, " + player.getId()));
+        		
+				Player aux = PlayerManager.login(particles[0], receivePacket.getAddress());
+        		Room location = Map.getRandomRoom();
+				aux.setLocation(location);
+				sb.append("Bem vindo, " + aux.getId() + "\n");
+        		sb.append("Sua localização inicial é: " + location.getColor() + "\n");
+        		sb.append(location.getDescription() + "\n");
+        		String playerResponse = sb.toString();
+        		response = new Response(playerResponse);        		
         		break;
         	
-        	case "EXAMINAR":
+        	/*case "EXAMINAR":
                 break;
             
             case "MOVER":
@@ -56,11 +74,12 @@ public final class CommandManager {
             	break;
             case "AJUDA":
             	break;
-                            
+                        */    
             default:
+            	sucess = false;
             	break;
-        	}
-         
+        	}        
+		
         return response;
 
      }
@@ -69,7 +88,7 @@ public final class CommandManager {
 		Room location = player.getLocation();
 		ArrayList<Player> thirdParties = PlayerManager.getPlayersInRoom(location);
 		
-		return new Response("Você disse " + command + " em voz alta.", thirdParties, player.getId() + " disse '" + command + "' em voz alta.");		 
+		return new Response("Você disse '" + command + "'.", thirdParties, player.getId() + " disse '" + command + "'.");		 
 	}
 
 	private static void exam(Player player, AbstractObject obj) {

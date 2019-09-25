@@ -46,7 +46,7 @@ public class UDPClient {
 	    sendData = message.getBytes();
 	    sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
 	    clientSocket.send(sendPacket);
-	    System.out.println("Enviado " + message);
+	    System.out.println("Enviado comando ao servidor : " + message);
 	}
 	
 	public String receive() {
@@ -59,7 +59,7 @@ public class UDPClient {
 				clientSocket.receive(receivePacket);
 				receiveData = receivePacket.getData();
 				serverContent = new String(receiveData);
-				System.out.println("Message from server: " + serverContent);
+				System.out.println("Message from server:\n" + serverContent);
 			}
 			
 			catch (IOException e) {
