@@ -1,44 +1,35 @@
 package client;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-
-import javax.sound.midi.Receiver;
+import java.util.concurrent.Semaphore;
 
 public class Main {
 	
-	private static UDPClient player;
+	private static UDPClient outSocket;
+	private static UDPClient inSocket;
+	private static View userInterface;
+	private static String command = null;
+	private static boolean running = false;
 	
-	public static void main(String[] args) throws IOException {
-		criarParticipante();
+	public static void main(String[] args) {
 		
-		int n = 1;
-		while(true) { 
-			sendCommand("Comando " + n++);
-			receiveMessage();
-		}
+		outSocket = new UDPClient(9090);
+		inSocket = new UDPClient(8080);
+		init();
 				
-	}
-	
-	private static void criarParticipante() {
+		new Thread(send).start();
+		new Thread(receive).start();
 		
-			int id = randomGenerator(100,1000);
-			player = new UDPClient(id);				
+		while(true) {
+			send.run();
+			receive.run();
+		}
 	}
 	
-	private static void sendCommand(String command) throws IOException {
+	private static void init() {
+		userInterface = new View();
+		userInterface.welcome();
+	}
+	
 		
-		player.sendCommand(command);		
-	}
-	
-	private static void receiveMessage() {
-		System.out.println(player.receiveMessage());
-	}
-	
-	private static int randomGenerator(int min, int max){
-		Random randomGenerator = new Random();
-		int randomInt = randomGenerator.nextInt(max-min) + min;
-		return randomInt;
-	}
-	
 }
+		
