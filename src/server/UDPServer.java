@@ -30,8 +30,7 @@ public class UDPServer {
 		running = true;
 		System.out.println("Let the game begin!");
 		serverSocket = new DatagramSocket(8080);        
-		Random rand = new Random();
-		
+				
 		while(running) 
 			listen();
 		
@@ -43,7 +42,7 @@ public class UDPServer {
 
 	private static void listen() {
 		
-		receiveData = new byte[1024];
+		receiveData = new byte[256];
 		
 		try {	            		     	
 	    	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -88,11 +87,11 @@ public class UDPServer {
 	
 	private static void send(DatagramPacket receivePacket, Response response) {
 		
-		sendData = new byte[1024];	    
+		sendData = new byte[256];	    
 		try {
 			clientIPAddress = receivePacket.getAddress();
 			sendData = response.getPlayerResponse().getBytes();
-	    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 9090);
+	    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 6060);
 			serverSocket.send(sendPacket);
 		} 
 	    catch (IOException e) {
@@ -106,7 +105,7 @@ public class UDPServer {
 				try {
 					clientIPAddress = tp.getIPAddress();
 					sendData = response.getThirdPartiesResponse().getBytes();
-			    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 9090);
+			    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 6060);
 					serverSocket.send(sendPacket);
 				}
 				
