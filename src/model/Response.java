@@ -3,23 +3,30 @@ package model;
 import java.util.ArrayList;
 
 public class Response {
-	private String playerResponse;
-	private ArrayList<Player> thirdParties;
-	private String thirdPartiesResponse;
+	private Player player;
+	private ArrayList<Player> listeners;
+	private ArrayList<String> serverMessages;
 	private boolean endGame;
 	
-	public Response (String playerResponse, ArrayList<Player> thirdParties, String thirdPartiesResponse) {
-		this.playerResponse = playerResponse;
-		this.thirdParties = thirdParties;
-		this.playerResponse = thirdPartiesResponse;
+	public Response (Player player, String playerResponse, ArrayList<Player> thirdParties, String thirdPartiesResponse) {
+		this.player = player;
+		this.listeners = thirdParties;
+		serverMessages.add(playerResponse);
+		serverMessages.add(thirdPartiesResponse);
 	}
 	
-	public Response (String playerResponse) {
-		this.playerResponse = playerResponse;
+	public Response (Player player, String playerResponse) {
+		this.player = player;
+		this.listeners = null;
+		serverMessages.add(playerResponse);		
 	}
 
-	public String getPlayerResponse() {
-		return playerResponse;
+	public Player getPlayer() {
+		return player;
+	}
+	
+	public ArrayList<String> getServerMessages() {
+		return serverMessages;
 	}
 
 	public boolean endGame() {
@@ -29,25 +36,10 @@ public class Response {
 	public void setEndGame(boolean endGame) {
 		this.endGame = endGame;
 	}
-
-	public void setPlayerResponse(String playerResponse) {
-		this.playerResponse = playerResponse;
+		
+	public ArrayList<Player> getListeners() {
+		return listeners;
 	}
 
-	public ArrayList<Player> getThirdParties() {
-		return thirdParties;
-	}
-
-	public void setThirdParties(ArrayList<Player> thirdParties) {
-		this.thirdParties = thirdParties;
-	}
-
-	public String getThirdPartiesResponse() {
-		return thirdPartiesResponse;
-	}
-
-	public void setThirdPartiesResponse(String thirdPartiesResponse) {
-		this.thirdPartiesResponse = thirdPartiesResponse;
-	}
-	
 }
+	

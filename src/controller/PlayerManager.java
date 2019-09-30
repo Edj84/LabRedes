@@ -3,6 +3,7 @@ package controller;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -15,11 +16,14 @@ import model.Room;
 public final class PlayerManager {
 	
 	private static ArrayList<Player> players = new ArrayList<Player>();
-		
+	private static HashMap<InetAddress, Player> ipTable  = new HashMap<InetAddress, Player>(); 
+	
+	
+	
 	public static Player getPlayerByID(String login) {
 		
 		Player aux = players.stream()
-			.filter(p -> p.getId().equals(login))
+			.filter(p -> p.getID().equals(login))
 			.findFirst().get();
 		
 		if(aux != null)
@@ -27,8 +31,13 @@ public final class PlayerManager {
 	
 		else 
 			return null;
-	}	
+	}
 	
+	public static Player getPlayerByIPAddress(InetAddress IPAddress) {
+		
+		return ipTable.get(IPAddress);	
+	}
+
 	public static ArrayList<Player> getPlayersInRoom(Room location){
 		return (ArrayList<Player>) players.stream()
 				.filter(p -> p.getLocation() == location)
@@ -37,9 +46,10 @@ public final class PlayerManager {
 		
 	public static Player login(String login, InetAddress IPAddress) {
 		
-		Player aux = new Player(login, IPAddress);
-		players.add(aux);
-		return aux;		
+		Player player = new Player(login, IPAddress);
+		players.add(player);
+		ipTable.put(IPAddress, player);
+		return player;		
 	}
 	
 	public static void logout(String login) {

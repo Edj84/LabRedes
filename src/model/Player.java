@@ -5,19 +5,19 @@ import java.util.ArrayList;
 
 public class Player {
    
-	private String id;
+	private String ID;
 	private InetAddress IPAddress;
 	private ArrayList<AbstractObject> backPack;
 	private Room location;
 
-    public Player (String id, InetAddress IPAddress){
-        this.id = id;
+    public Player (String ID, InetAddress IPAddress){
+        this.ID = ID;
         this.IPAddress = IPAddress;
         this.backPack = new ArrayList<AbstractObject>();        
     }
     
-    public String getId() {
-    	return id;
+    public String getID() {
+    	return ID;
     }
     
     public InetAddress getIPAddress() {
@@ -28,19 +28,25 @@ public class Player {
     	return backPack;
     }
     
-    public boolean searchBackPack(AbstractObject item) {
+    public boolean searchBackPack(String item) {
     	return backPack.stream()
-    			.anyMatch(o -> o.equals(item));
+    			.anyMatch(o -> o.getDescription().equals(item));
     }
     
     public void keep(AbstractObject item) {
     	backPack.add(item);
     }
     
-    public void drop(AbstractObject item) {
+    public void drop(AbstractObject item) { 
     	backPack.remove(item);
     }
     
+    public AbstractObject getObjectFromBackpack(String target) {
+    	 return backPack.stream()
+    					  .filter(i -> i.getDescription().equals(target))
+    					  .findFirst()
+    					  .orElseGet(null);
+    }
     
     public void setIPAddress(InetAddress newIPAddress) {
     	this.IPAddress = newIPAddress;
@@ -55,11 +61,11 @@ public class Player {
     }
     
     public String getStatus() {
-    	return "Jogador " + getId() + " está na " + getLocation().getDescription();
+    	return "Jogador " + getID() + " está na " + getLocation().getDescription();
     }
 
     @Override
     public String toString() {
-    	return "Client " + id + "\nIP " + IPAddress;
+    	return "Client " + ID + "\nIP " + IPAddress;
     }
 }

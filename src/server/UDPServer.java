@@ -14,13 +14,18 @@ import model.Response;
 public class UDPServer {
 	
 	private static InetAddress clientIPAddress;
-	private static DatagramSocket serverSocket;
-	private static byte[] sendData;
-	private static DatagramPacket sendPacket;
+	
+	private static DatagramSocket inSocket;
+	private static DatagramPacket receivePacket;
 	private static byte[] receiveData;
-	private static Player player;
-	private static String command;
+	
+	private static DatagramSocket outSocket;
+	private static DatagramPacket sendPacket;
+	private static byte[] sendData;
+	
 	private static Map map;
+	private static ArrayList<String> inBuffer;
+	private static ArrayList<String> outBuffer;
 	
 	private static boolean running;
 	
@@ -29,10 +34,12 @@ public class UDPServer {
 		createWorld();
 		running = true;
 		System.out.println("Let the game begin!");
-		serverSocket = new DatagramSocket(8080);        
+		inSocket = new DatagramSocket(8080);
+		outSocket = new DatagramSocket(9090);       
+		new Thread(receive).start();
 				
 		while(running) 
-			listen();
+			receive.run();
 		
 	}
 			
@@ -40,37 +47,60 @@ public class UDPServer {
 		map = new Map();
 	}
 
-	private static void listen() {
+	private static Runnable send = new Runnable() {
 		
-		receiveData = new byte[256];
-		
-		try {	            		     	
-	    	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-	    	serverSocket.receive(receivePacket);            	   
-	    	String[] command = splitPackage(receivePacket);   	
-	    	Response response = process(receivePacket, command);
-	    	
-	    	send(receivePacket, response);
-	    	
-    	}
-    
-        catch(SocketException e) {
-			System.out.println("Game over!");
+		public void run() {
+						
+			try {
+				sendData = new byte[1024];
+				sendData = command.getBytes();
+				sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
+				outSocket.send(sendPacket);
+			} 
+			
+			catch (IOException e) {
+				System.out.println("Unable to send message to server");
+			}		        
+		   
 		} 
-		
-		catch (IOException e) {
-			System.out.println("Unable to get package from client");
-		}
-	}
 	
-	private static String[] splitPackage(DatagramPacket receivePacket) {
+	};
+	
+	
+	private static Runnable receive = new Runnable() {
+		
+		public void run() {
+			
+			receiveData = new byte[1024];
+			
+			try {	            		     	
+		    	receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		    	inSocket.receive(receivePacket);            	   
+		    	inBuffer = new ArrayList<String>();
+		    	splitPackage(receivePacket);   	
+		    	Response response = process(receivePacket);
+		    	
+	    	}
+	    
+	        catch(SocketException e) {
+				System.out.println("Game over!");
+			} 
+			
+			catch (IOException e) {
+				System.out.println("Unable to get package from client");
+			}
+		}
+	};
+	
+	private static void splitPackage(DatagramPacket receivePacket) {
 		
 		byte[] data = receivePacket.getData();
 		data = cleanBlankSpaces(data);		
-		String text = new String(data);
 		String[] command = new String(data).split("\\s");
-				
-		return command;		
+		
+		for(String s : command)
+			inBuffer.add(s);
+		
 	}
 	
 	private static byte[] cleanBlankSpaces(byte[] data) {
@@ -78,21 +108,21 @@ public class UDPServer {
 		return new String(data).trim().getBytes();		
 	}
 
-	private static Response process(DatagramPacket receivePacket, String[] message) {
+	private static DatagramPacket[] process(DatagramPacket receivePacket) {
 		
-		Response response = CommandManager.process(receivePacket, message);
+		DatagramPacket[] serverMessages = CommandManager.process(receivePacket, inBuffer);
 		
-		return response;
+		return serverMessages;
 	}
 	
 	private static void send(DatagramPacket receivePacket, Response response) {
 		
-		sendData = new byte[256];	    
+		sendData = new byte[1024];	    
 		try {
 			clientIPAddress = receivePacket.getAddress();
 			sendData = response.getPlayerResponse().getBytes();
 	    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 6060);
-			serverSocket.send(sendPacket);
+			inSocket.send(sendPacket);
 		} 
 	    catch (IOException e) {
 			System.out.println("Unable to send response to client");
@@ -106,7 +136,7 @@ public class UDPServer {
 					clientIPAddress = tp.getIPAddress();
 					sendData = response.getThirdPartiesResponse().getBytes();
 			    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 6060);
-					serverSocket.send(sendPacket);
+					inSocket.send(sendPacket);
 				}
 				
 			    catch (IOException e) {
