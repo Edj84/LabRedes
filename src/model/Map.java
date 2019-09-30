@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
+import controller.Rand;
+
 public class Map {
 	
 	private static ArrayList<Room> rooms;
@@ -12,29 +14,48 @@ public class Map {
 		
 		rooms = new ArrayList<Room>();
 		
+		Room monsterRoom = new Room("do Monstro");
+		rooms.add(monsterRoom);
+		Room yellowRoom = new Room("amarelo"); 
+		rooms.add(yellowRoom);
+		Room redRoom = new Room("vermelho"); 
+		rooms.add(redRoom);
+		Room whiteRoom = new Room("branco");
+		rooms.add(whiteRoom);
+		Room blackRoom = new Room("preto");
+		rooms.add(blackRoom);
+		Room blueRoom = new Room("azul"); 
+		rooms.add(blueRoom);
+				
 		Key monsterKey = new Key("...um material radiotivo?!");
-		
-		Door monsterDoor = new Door("monstro", monsterKey, true);
-		Door redDoor = new Door("vermelho", null, false);
-		Door blueDoor = new Door("azul", null, false);
-		Door purpleDoor = new Door("roxo", null, false);
-		Door blackDoor = new Door("preta", null, false);
-		Door whiteDoor = new Door("branca", null, false);
-		
-		rooms.add(new Room(null, null, blueDoor, null, "vermelho", null, null));
-		rooms.add(new Room(purpleDoor, null, null, redDoor, "azul", null, null));
-		rooms.add(new Room(blackDoor, blueDoor, null, null, "roxo", null, null));
-		rooms.add(new Room(null, purpleDoor, whiteDoor, null, "preto", null, null));
-		rooms.add(new Room(null, null, null, blackDoor, "branco", null, null));
+		Key RedYellowKey = new Key(" vermelhos e amarelos");
+				
+		Door monsterDoor = new Door("...verdes, que brilham no escuro", monsterRoom, redRoom, monsterKey, true);
+		monsterRoom.setDoor(monsterDoor, 0);
+		redRoom.setDoor(monsterDoor, 1);
+		Door RedYellowDoor = new Door("vermelhos e amarelos", redRoom, yellowRoom, RedYellowKey, true);
+		yellowRoom.setDoor(RedYellowDoor, 2);
+		redRoom.setDoor(RedYellowDoor, 3);
+		Door RedWhiteDoor = new Door("vermelhos e brancos", redRoom, whiteRoom, null, false);
+		redRoom.setDoor(RedWhiteDoor, 2);
+		whiteRoom.setDoor(RedWhiteDoor, 3);
+		Door WhiteBlackDoor = new Door("brancos e pretos", whiteRoom, blackRoom, null, false);
+		blackRoom.setDoor(WhiteBlackDoor, 0);
+		whiteRoom.setDoor(WhiteBlackDoor, 1);
+		Door BlueBlackDoor = new Door("pretos e azuis", blueRoom, blackRoom, null, false);
+		blueRoom.setDoor(BlueBlackDoor, 0);
+		blackRoom.setDoor(BlueBlackDoor, 1);
 		
 	}
 	
 	public static Room getRandomRoom() {
 		
-		Room randRoom = rooms.stream()
-					.unordered()
-					.findFirst()
-					.get();
+		ArrayList<Room> auxRooms = new ArrayList<Room>(rooms);
+		auxRooms.remove(0);
+		
+		int index = Rand.getRandInt(0, auxRooms.size());
+		
+		Room randRoom = rooms.get(index);
 		
 		return randRoom;		
 	}

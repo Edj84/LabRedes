@@ -11,13 +11,16 @@ public class Response {
 	public Response (Player player, String playerResponse, ArrayList<Player> thirdParties, String thirdPartiesResponse) {
 		this.player = player;
 		this.listeners = thirdParties;
+		serverMessages = new ArrayList<String>();
 		serverMessages.add(playerResponse);
 		serverMessages.add(thirdPartiesResponse);
 	}
 	
 	public Response (Player player, String playerResponse) {
 		this.player = player;
-		this.listeners = null;
+		this.listeners = new ArrayList<Player>();
+		listeners.add(player);
+		serverMessages = new ArrayList<String>();
 		serverMessages.add(playerResponse);		
 	}
 

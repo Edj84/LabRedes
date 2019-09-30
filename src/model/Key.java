@@ -6,7 +6,7 @@ public class Key extends AbstractObject {
 
     public Key(String description){
         this.id = ++id;
-        this.description = "Essa chave é feita de um metal " + description;
+        this.description = "Uma chave feita de metais " + description;
     }
 
     public int getId(){

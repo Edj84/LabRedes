@@ -3,31 +3,79 @@ package model;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+
 public class Room extends AbstractObject {
     private static int id = 0;
-	private Door north;
-    private Door south;
-    private Door east;
-    private Door west;
+	private Door[] doors;
     private String description;
     private ArrayList<AbstractObject> items;
     private ArrayList<Player> players;
-	public String color;
-
-    public Room (Door north, Door south, Door blueDoor, Door west, String description, ArrayList<AbstractObject> objects, ArrayList<Player> players){
+	
+    public Room (String description){
         this.id = ++id;
-    	this.north = north;
-        this.south = south;
-        this.east = blueDoor;
-        this.west = west;
+        doors = new Door[4];    	
         this.description = description;
-        this.items = objects;
-        this.players = players;
-        this.color = "COR " + String.valueOf(id);
+        this.items = new ArrayList<AbstractObject>();
+        this.players = new ArrayList<Player>();
     }
     
     public String getDescription() {
-    	return description;
+    	StringBuilder sb = new StringBuilder();
+    	
+    	sb.append("Quarto " + description + "\n");
+    	
+    	String direction = "";
+    	
+    	for(int i = 0; i <doors.length; i++) {
+    		
+    		switch(i) {
+    			case 0:
+    			direction = "NORTE";
+    				break;
+    			case 1:
+        			direction = "SUL";
+        				break;
+    			case 2:
+        			direction = "LESTE";
+        				break;
+    			case 3:
+        			direction = "OESTE";
+        				break;    			
+    		}
+    	
+    		Door aux = doors[i]; 
+    			
+    		if(aux == null)
+    			sb.append("Ao " + direction + " não há passagem.\n");
+    		
+    		else {
+    			if(aux.checkClosed()) {
+    				sb.append("Ao " + direction + " há uma porta fechada.\n");
+    			}
+    			else {
+    				sb.append("Ao " + direction + " há uma porta aberta que leva ao quarto " + getDestination(direction).getColor() + "\n");
+    			}
+    		}
+    		
+    	}
+    		
+    		if(items.isEmpty())
+    			sb.append("Não há itens neste quarto\n");
+    		
+    		else {
+    			sb.append("O quarto contém os seguintes itens: \n");
+    			
+    			for(AbstractObject item : items)
+    				sb.append(item.getDescription() + "\n");    			
+    		}
+    		
+    		sb.append("Estão no quarto os seguintes jogadores: \n");
+    			
+    			for(Player player : players)
+    				sb.append(player.getID() + "\n");    			
+    		
+    	
+    	return sb.toString();
     }
     
     public ArrayList<Player> getPlayers(){
@@ -42,9 +90,6 @@ public class Room extends AbstractObject {
     	
     	ArrayList<Player> thirdParties = new ArrayList<>(players);
     	thirdParties.remove(player);
-    	
-    	if(thirdParties.isEmpty())
-    		return null;
     	
     	return thirdParties;
     }
@@ -97,17 +142,15 @@ public class Room extends AbstractObject {
     }
     
     public Door[] getDoors() {
-    	Door[] doors = new Door[4];
-    	doors[0] = north;
-    	doors[1] = south;
-    	doors[2] = east;
-    	doors[3] = west;
-    	
     	return doors;
+    }
+    
+    public void setDoor(Door door, int direction) {
+    	doors[direction] = door;
     }
 
 	public String getColor() {
-		return color;
+		return description;
 	}
 
 	public Room getDestination(String direction) {
@@ -115,18 +158,18 @@ public class Room extends AbstractObject {
 		Room destination = null;
 		Room[] connection = null;
 		
-		switch(direction) {
-		case "NORTH":
-			connection = north.getConnection();
+		switch(direction.toUpperCase()) {
+		case "NORTE":
+			connection = doors[0].getConnection();
 			break;
-		case "SOUTH":
-			connection = south.getConnection();
+		case "SUL":
+			connection = doors[1].getConnection();
 			break;
-		case "EAST":
-			connection = east.getConnection();
+		case "LESTE":
+			connection = doors[2].getConnection();
 			break;
-		case "WEST":
-			connection = west.getConnection();
+		case "OESTE":
+			connection = doors[3].getConnection();
 			break;
 		}
 				

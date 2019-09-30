@@ -33,7 +33,15 @@ public class PlayerManager {
 	
 	public static Player getPlayerByIPAddress(InetAddress IPAddress) {
 		
-		return ipTable.get(IPAddress);	
+		for(InetAddress ip : ipTable.keySet())
+			System.out.println("IP " + ip);
+		
+		System.out.println("IP na tabela " + ipTable.containsKey(IPAddress));
+		
+		Player player = ipTable.get(IPAddress);
+		
+		System.out.println("Player " + player.getID());
+		return player;	
 	}
 
 	public static ArrayList<Player> getPlayersInRoom(Room location){
@@ -45,8 +53,13 @@ public class PlayerManager {
 	public static Player login(String login, InetAddress IPAddress) {
 		
 		Player player = new Player(login, IPAddress);
+		System.out.println(players);
 		players.add(player);
+		System.out.println("incluí " + player.getID() + " na lista");
+		System.out.println("IP jogador " + player.getIPAddress());
 		ipTable.put(IPAddress, player);
+		
+		System.out.println("incluí " + player.getIPAddress() + " na tabela de roteamento");
 		return player;		
 	}
 	

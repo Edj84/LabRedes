@@ -9,11 +9,13 @@ public class Door extends AbstractObject {
     private Room[] connection;
     private boolean closed;
 
-    public Door (String description, Key requirement, boolean closed){
+    public Door (String description, Room firstRoom, Room secondRoom, Key requirement, boolean closed){
         this.ID = ++ID;
         this.description = description;
         this.requirement = requirement;
         this.connection = new Room[2];
+        connection[0] = firstRoom;
+        connection[1] = secondRoom;
         this.closed = closed;
     }
 

@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import controller.CommandManager;
 import controller.PlayerManager;
-import model.Map; 
+import model.Map;
+import model.Response; 
 
 public class UDPServer { 
 	
@@ -17,14 +20,27 @@ public class UDPServer {
 	private static byte[] receiveData;
 	private static byte[] sendData;
 	private static ArrayList<DatagramPacket> outBuffer;
+	private static String clientMessage;
+	private static CommandManager commandManager;
 	
-	public static void main(String args[]) throws IOException, InterruptedException { 
+	public static void main(String args[]) { 
 		
-		IPAddress = InetAddress.getLocalHost();
-		serverSocket = new DatagramSocket(8080); 
+		try {
+			IPAddress = InetAddress.getLocalHost();
+		} 
+		catch (UnknownHostException e) {
+			System.out.println("Unable to get server IPAddress");
+		}
+		try {
+			serverSocket = new DatagramSocket(8080);
+		} catch (SocketException e) {
+			System.out.println("Unable to start server socket");
+		} 
+		
 		outBuffer = new ArrayList<DatagramPacket>();
 		receiveData = new byte[1024];
 		sendData = new byte[1024];
+		commandManager = new CommandManager();
 		
 		Thread send = new Thread(new Runnable() { 
 			@Override
@@ -60,8 +76,9 @@ public class UDPServer {
 					while (true) { 
 						synchronized (this) { 
 							
-							String clientMessage = receive();
-							outBuffer = process(receivePacket);
+							System.out.println("Im listening");
+							receive();
+							process(receivePacket);
 							
 							// Exit condition 
 							if(clientMessage.toUpperCase().equals("SAIR")) { 
@@ -78,33 +95,61 @@ public class UDPServer {
 		}); 
 
 		send.start(); 
-		receive.start(); 
+		receive.start();
+		
+		while(true) {
+			send.run();
+			receive.run();
+		}
 
-		send.join(); 
-		receive.join(); 
+		//send.join(); 
+		//receive.join(); 
 	} 
 	
-	private static String receive() throws IOException {
+	private static void receive() throws IOException {
 		receiveData = new byte[1024];
 		receivePacket = new DatagramPacket(receiveData, receiveData.length); 
 		serverSocket.receive(receivePacket);
-		String clientMessage = (new String(receiveData)).trim();
-		System.out.println("Recebi " + clientMessage);
+		clientMessage = (new String(receiveData)).trim();
+		System.out.println("Recebi do cliente " + receivePacket.getAddress() + ": " + clientMessage);
 				
-		return clientMessage;
 	}
 		
-	private static ArrayList<DatagramPacket> process(DatagramPacket receivePacket) {
+	private static void process(DatagramPacket receivePacket) {
 		
-		ArrayList<DatagramPacket> serverMessages = CommandManager.process(receivePacket);
-		return serverMessages;
+		ArrayList<DatagramPacket> packets = new ArrayList<DatagramPacket>();
+		//try {
+			packets.addAll(CommandManager.process(receivePacket));
+		//}
+		/*catch (NullPointerException e){
+			try {
+				errorPacket(receivePacket, "ERROR: Could not retrieve packets");
+			} 
+			
+			catch (IOException e1) {
+				System.out.println("Unable to send packet to client");
+			}
+
+		}
+*/
+		outBuffer = packets;
 	}
 	
 	private static void send(DatagramPacket sendPacket) throws IOException {
 		sendData = sendPacket.getData();
 		serverSocket.send(sendPacket);
 		String aux = new String(sendData).trim();
-		System.out.println("Mandei " + aux);
+		System.out.println("Enviei ao cliente " + aux);
+	}
+	
+	private static void errorPacket(DatagramPacket receivePacket, String errorMessage) throws IOException {
+		
+		sendData = new byte[1024];
+		sendData = errorMessage.getBytes();
+		InetAddress clientIPAddress = receivePacket.getAddress();
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 7070);		
+		send(sendPacket);
+		
 	}
 		
 }
