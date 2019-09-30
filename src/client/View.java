@@ -13,16 +13,16 @@ public class View {
 		System.out.println("####################\n");
 	}
 	
-	public void welcome() {
+	public static void welcome() {
 		title();
 		System.out.println("Bem-vindo(a) ao NOME DO JOGO!\n");
 	}
 	
-	public void goal() {
+	public static void goal() {
 		System.out.println("Seu objetivo neste jogo é OBJETIVO DO JOGO...\n");
 	}
 	
-	public String login() {
+	public static String login() {
 		scan = new Scanner(System.in);
 		
 		System.out.println("Para começar, insira seu nome de usuário.");
@@ -32,7 +32,7 @@ public class View {
 		return "LOGIN " + login.toUpperCase().trim();		
 	}
 	
-	public String prompt() {
+	public static String prompt() {
 		scan = new Scanner(System.in);
 		
 		System.out.println("O que você quer fazer?");
@@ -40,4 +40,9 @@ public class View {
 		
 		return text.toUpperCase();		
 	}
+	
+	public void show(String content) {
+		System.out.println(content);
+	}
+	
 }

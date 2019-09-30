@@ -2,23 +2,21 @@ package controller;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import model.Map;
 import model.Player;
 import model.Room;
 
 
-public final class PlayerManager {
+public class PlayerManager {
 	
-	private static ArrayList<Player> players = new ArrayList<Player>();
-	private static HashMap<InetAddress, Player> ipTable  = new HashMap<InetAddress, Player>(); 
+	private static ArrayList<Player> players;
+	private static HashMap<InetAddress, Player> ipTable; 
 	
-	
+	public PlayerManager() {
+		players = new ArrayList<Player>();
+		ipTable  = new HashMap<InetAddress, Player>(); 
+	}
 	
 	public static Player getPlayerByID(String login) {
 		

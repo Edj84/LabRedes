@@ -18,15 +18,17 @@ public final class CommandManager {
 	private static StringBuilder sb = new StringBuilder();
 	private static InetAddress playerIP;
 	private static Response response; 
+	private static PlayerManager playerManager;
 	private static Player player = null;
 	private static Room location = null; 
 	private static String playerResponseContent;
 	private static ArrayList<Player> thirdParties;
-	private static String thirdPartiesResponseContent;		
+	private static String thirdPartiesResponseContent;	
+	private static ArrayList<String> inBuffer;
 	private static String verb;
+	private static Map map;	
 	
-	
-	public static ArrayList<DatagramPacket> process(DatagramPacket receivePacket, ArrayList<String> inBuffer) {
+	public static ArrayList<DatagramPacket> process(DatagramPacket receivePacket) {
 		
 		sb.setLength(0);
 		response = null;
@@ -36,6 +38,7 @@ public final class CommandManager {
 		playerResponseContent = null;
 		thirdParties = null;
 		thirdPartiesResponseContent = null;		
+		splitPackage(receivePacket);
 		verb = inBuffer.get(0);
 		System.out.println(verb);
 		
@@ -240,6 +243,24 @@ public final class CommandManager {
 		return ResponseManager.packResponses(response);
 		
      }
+	
+	private static void splitPackage(DatagramPacket receivePackage) {
+		
+		byte[] data = new byte[1024]; 
+		data = receivePackage.getData();
+		String clientMessage = cleanBlankSpaces(data);		
+		String[] command = new String(clientMessage).split("\\s");
+		
+		inBuffer = new ArrayList<String>();
+		
+		for(String s : command)
+			inBuffer.add(s);
+		
+	}
+	
+	private static String cleanBlankSpaces(byte[] data) {
+		return new String(data).trim();		
+	}
 	
 	private static Door getDoor(Room location, String direction) {
 		Door[] doors = new Door[4];

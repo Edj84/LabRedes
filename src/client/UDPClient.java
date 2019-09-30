@@ -1,129 +1,108 @@
 package client;
 
-// Envia o pacote contendo um arquivo ao servidor
-
-import java.net.*;// DatagramaSocket,InetAddress,DatagramaPacket
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
-public class UDPClient {
+public class UDPClient { 
 	
-	private static String ID;
-	private static byte[] ipAddr;
 	private static InetAddress IPAddress;
-	
-	private static DatagramSocket inSocket;
-	private static DatagramPacket receivePacket;
-	private static byte[] receiveData;
-	
-	private static DatagramSocket outSocket;
-	private static DatagramPacket sendPacket;
-	private static byte[] sendData;
-	
-	private static View userInterface;
-	private static boolean running;
+	private static DatagramSocket clientSocket;
+
+	public static void main(String args[]) throws IOException, InterruptedException { 
+
+		// create DatagramSocket and gets ip 
+		clientSocket = new DatagramSocket(7070); 
+		IPAddress = InetAddress.getLocalHost(); 
 		
-	public UDPClient(){
+		send(login());
 		
-		ipAddr = new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1};
-		running = false;
-	}
-	
-	public static void main(String args[]) {
-		
-		UDPClient client = new UDPClient();
-		
-		try {
-			IPAddress = InetAddress.getByAddress(ipAddr);
-			inSocket = new DatagramSocket(6060);
-			outSocket = new DatagramSocket(7070);
-			if(IPAddress != null)
-				System.out.println("IP OK");
-			if(inSocket != null)
-				System.out.println("IN OK");
-			if(outSocket != null)
-				System.out.println("OUT OK");
+		// create a sender thread with a nested runnable class definition 
+		Thread send = new Thread(new Runnable() { 
+			
+			@Override
+			public void run() { 
+				try { 
+					
+					while (true) { 
+						synchronized (this) { 
+							
+							String command = View.prompt(); 
+							send(command);
+							
+							// exit condition 
+							if (command.toUpperCase().equals("SAIR")) { 
+								System.out.println("Fugindo da briga...");
+								break; 
+							}
+						} 
+					}
+				}
 				
-		} 
-		
-		catch (UnknownHostException e) {
-			System.out.println("Unable to find server");
-		} 
-		
-		catch (SocketException e) {
-			System.out.println("Unable to open socket");
-		}
-		
-		
-		init();
-		
-		new Thread(send).start();
-		new Thread(receive).start();
-		
-		while(true) {
-			send.run();
-			receive.run();
-		}
-	}
-	
-	public String getID() {
-		return ID;
-	}
-	
-	public void setID(String ID) {
-		this.ID = ID;
-	}
-	
-	private static void init() {
-		userInterface = new View();
-		userInterface.welcome();
-	}
-	
-	private static Runnable send = new Runnable() {
-		
-		public void run() {
-						
-			if(!running) {				
-				
-				String command = userInterface.login();
-						
-				if(command != null)
-					running = true;
-				
-				else 
-		        	command = userInterface.prompt();           		
-		        	
-				try {
-					sendData = new byte[4096];
-				    sendData = command.getBytes();
-				    System.out.println(sendData.length);
-				    sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
-				    outSocket.send(sendPacket);
+				catch (IOException e) { 
+					System.out.println("Exception occured"); 
 				} 
-				catch (IOException e) {
-					System.out.println("Unable to send message to server");
-				}		        
-		    } 
-			
-		}
-	};
-	
-	private static Runnable receive = new Runnable() {
-		
-		public void run() {
-			
-			try {
-				receiveData = new byte[256];
-				receivePacket = new DatagramPacket(receiveData, receiveData.length);
-				inSocket.receive(receivePacket);
-				receiveData = receivePacket.getData();
-				String serverContent = new String(receiveData);
-				System.out.println("Message from server:\n" + serverContent);
 			} 
-			
-			catch (IOException e) {
-				System.out.println("Unable to receive message from server");
-			}
-		}
-	};
+		});
 		
-}
+		// create a receiver thread with a nested runnable class definition 
+		Thread receive = new Thread(new Runnable() {
+			
+			@Override
+			public void run() { 
+				try { 
+
+					while (true) { 
+						synchronized (this) { 
+
+							String serverMessage = receive();
+							
+							//exit condition 
+							if (serverMessage.toUpperCase().equals("PARAR")) { 
+								System.out.println("O jogo acabou"); 
+								break;
+							} 
+						} 
+					} 
+				} 
+				catch (IOException e) { 
+					System.out.println("Exception occured"); 
+				} 
+			}
+		}); 
+
+		send.start(); 
+		receive.start(); 
+
+		send.join(); 
+		receive.join(); 
+	}
+	
+	private static String send(String command) throws IOException {
+		
+		byte[] sendData = new byte[1024];
+		sendData = command.getBytes();
+
+		DatagramPacket sendPackage = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
+		clientSocket.send(sendPackage); 
+		
+		System.out.println("Mandei " + command);
+
+		return command;		 
+	}
+	
+	private static String receive() throws IOException {
+		byte[] receiveData = new byte[1024]; 
+		DatagramPacket receivePackage = new DatagramPacket(receiveData,receiveData.length);
+		clientSocket.receive(receivePackage); 
+		String serverMessage = (new String(receiveData)).trim(); 
+		System.out.println("Recebi " + serverMessage);
+		
+		return "Mensagem do servidor: " + serverMessage;
+	} 
+
+	private static String login() {
+		return View.login();
+	} 
+} 

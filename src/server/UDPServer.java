@@ -1,150 +1,110 @@
 package server;
 
-
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Random;
+import controller.CommandManager;
+import controller.PlayerManager;
+import model.Map; 
 
-import controller.*;
-import model.Map;
-import model.Player;
-import model.Response;
-
-public class UDPServer {
+public class UDPServer { 
 	
-	private static InetAddress clientIPAddress;
-	
-	private static DatagramSocket inSocket;
+	private static InetAddress IPAddress;
+	private static DatagramSocket serverSocket;
 	private static DatagramPacket receivePacket;
 	private static byte[] receiveData;
-	
-	private static DatagramSocket outSocket;
-	private static DatagramPacket sendPacket;
 	private static byte[] sendData;
+	private static ArrayList<DatagramPacket> outBuffer;
 	
-	private static Map map;
-	private static ArrayList<String> inBuffer;
-	private static ArrayList<String> outBuffer;
-	
-	private static boolean running;
-	
-	public static void main(String args[]) throws Exception {
+	public static void main(String args[]) throws IOException, InterruptedException { 
 		
-		createWorld();
-		running = true;
-		System.out.println("Let the game begin!");
-		inSocket = new DatagramSocket(8080);
-		outSocket = new DatagramSocket(9090);       
-		new Thread(receive).start();
+		IPAddress = InetAddress.getLocalHost();
+		serverSocket = new DatagramSocket(8080); 
+		outBuffer = new ArrayList<DatagramPacket>();
+		receiveData = new byte[1024];
+		sendData = new byte[1024];
+		
+		Thread send = new Thread(new Runnable() { 
+			@Override
+			public void run() { 
+				try { 
+					
+					while (true) { 
+						synchronized (this) { 
+							
+							if(!outBuffer.isEmpty())
+								send(outBuffer.remove(0));
+							
+							String serverMessage = new String(sendData); 
+							
+							// exit condition 
+							if((serverMessage).toUpperCase().equals("PARAR")) { 
+								System.out.println("O jogo acabou"); 
+								break; 
+							}
+						} 
+					} 
+				} 
+				catch (IOException e) { 
+					System.out.println("Exception occured" + e.getMessage()); 
+				} 
+			} 
+		}); 
+
+		Thread receive = new Thread(new Runnable() { 
+			@Override
+			public void run() { 
+				try { 
+					while (true) { 
+						synchronized (this) { 
+							
+							String clientMessage = receive();
+							outBuffer = process(receivePacket);
+							
+							// Exit condition 
+							if(clientMessage.toUpperCase().equals("SAIR")) { 
+								System.out.println("Cliente encerrou a conexão"); 
+								break; 
+							} 
+						} 
+					} 
+				} 
+				catch (IOException e) {
+					System.out.println("Exception occured"); 
+				} 
+			} 
+		}); 
+
+		send.start(); 
+		receive.start(); 
+
+		send.join(); 
+		receive.join(); 
+	} 
+	
+	private static String receive() throws IOException {
+		receiveData = new byte[1024];
+		receivePacket = new DatagramPacket(receiveData, receiveData.length); 
+		serverSocket.receive(receivePacket);
+		String clientMessage = (new String(receiveData)).trim();
+		System.out.println("Recebi " + clientMessage);
 				
-		while(running) 
-			receive.run();
-		
+		return clientMessage;
 	}
-			
-	private static void createWorld() {		
-		map = new Map();
-	}
-
-	private static Runnable send = new Runnable() {
 		
-		public void run() {
-						
-			try {
-				sendData = new byte[1024];
-				sendData = command.getBytes();
-				sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
-				outSocket.send(sendPacket);
-			} 
-			
-			catch (IOException e) {
-				System.out.println("Unable to send message to server");
-			}		        
-		   
-		} 
-	
-	};
-	
-	
-	private static Runnable receive = new Runnable() {
+	private static ArrayList<DatagramPacket> process(DatagramPacket receivePacket) {
 		
-		public void run() {
-			
-			receiveData = new byte[1024];
-			
-			try {	            		     	
-		    	receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		    	inSocket.receive(receivePacket);            	   
-		    	inBuffer = new ArrayList<String>();
-		    	splitPackage(receivePacket);   	
-		    	Response response = process(receivePacket);
-		    	
-	    	}
-	    
-	        catch(SocketException e) {
-				System.out.println("Game over!");
-			} 
-			
-			catch (IOException e) {
-				System.out.println("Unable to get package from client");
-			}
-		}
-	};
-	
-	private static void splitPackage(DatagramPacket receivePacket) {
-		
-		byte[] data = receivePacket.getData();
-		data = cleanBlankSpaces(data);		
-		String[] command = new String(data).split("\\s");
-		
-		for(String s : command)
-			inBuffer.add(s);
-		
-	}
-	
-	private static byte[] cleanBlankSpaces(byte[] data) {
-		
-		return new String(data).trim().getBytes();		
-	}
-
-	private static DatagramPacket[] process(DatagramPacket receivePacket) {
-		
-		DatagramPacket[] serverMessages = CommandManager.process(receivePacket, inBuffer);
-		
+		ArrayList<DatagramPacket> serverMessages = CommandManager.process(receivePacket);
 		return serverMessages;
 	}
 	
-	private static void send(DatagramPacket receivePacket, Response response) {
-		
-		sendData = new byte[1024];	    
-		try {
-			clientIPAddress = receivePacket.getAddress();
-			sendData = response.getPlayerResponse().getBytes();
-	    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 6060);
-			inSocket.send(sendPacket);
-		} 
-	    catch (IOException e) {
-			System.out.println("Unable to send response to client");
-		}
-		
-		if(response.getThirdParties() != null) {
-			
-			for(Player tp : response.getThirdParties()) {
-				
-				try {
-					clientIPAddress = tp.getIPAddress();
-					sendData = response.getThirdPartiesResponse().getBytes();
-			    	sendPacket = new DatagramPacket(sendData, sendData.length, clientIPAddress, 6060);
-					inSocket.send(sendPacket);
-				}
-				
-			    catch (IOException e) {
-					System.out.println("Unable to send response to client");
-				}
-				
-			}
-		}
+	private static void send(DatagramPacket sendPacket) throws IOException {
+		sendData = sendPacket.getData();
+		serverSocket.send(sendPacket);
+		String aux = new String(sendData).trim();
+		System.out.println("Mandei " + aux);
 	}
 		
 }
