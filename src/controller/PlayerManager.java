@@ -2,23 +2,21 @@ package controller;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import model.Map;
 import model.Player;
 import model.Room;
 
 
-public final class PlayerManager {
+public class PlayerManager {
 	
-	private static ArrayList<Player> players = new ArrayList<Player>();
-	private static HashMap<InetAddress, Player> ipTable  = new HashMap<InetAddress, Player>(); 
+	private static ArrayList<Player> players;
+	private static HashMap<InetAddress, Player> ipTable; 
 	
-	
+	public PlayerManager() {
+		players = new ArrayList<Player>();
+		ipTable  = new HashMap<InetAddress, Player>(); 
+	}
 	
 	public static Player getPlayerByID(String login) {
 		
@@ -35,7 +33,15 @@ public final class PlayerManager {
 	
 	public static Player getPlayerByIPAddress(InetAddress IPAddress) {
 		
-		return ipTable.get(IPAddress);	
+		for(InetAddress ip : ipTable.keySet())
+			System.out.println("IP " + ip);
+		
+		System.out.println("IP na tabela " + ipTable.containsKey(IPAddress));
+		
+		Player player = ipTable.get(IPAddress);
+		
+		System.out.println("Player " + player.getID());
+		return player;	
 	}
 
 	public static ArrayList<Player> getPlayersInRoom(Room location){
@@ -47,8 +53,13 @@ public final class PlayerManager {
 	public static Player login(String login, InetAddress IPAddress) {
 		
 		Player player = new Player(login, IPAddress);
+		System.out.println(players);
 		players.add(player);
+		System.out.println("incluí " + player.getID() + " na lista");
+		System.out.println("IP jogador " + player.getIPAddress());
 		ipTable.put(IPAddress, player);
+		
+		System.out.println("incluí " + player.getIPAddress() + " na tabela de roteamento");
 		return player;		
 	}
 	

@@ -3,9 +3,6 @@ package controller;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-
 import model.AbstractObject;
 import model.Door;
 import model.Map;
@@ -18,48 +15,57 @@ public final class CommandManager {
 	private static StringBuilder sb = new StringBuilder();
 	private static InetAddress playerIP;
 	private static Response response; 
+	private static PlayerManager playerManager;
 	private static Player player = null;
 	private static Room location = null; 
 	private static String playerResponseContent;
 	private static ArrayList<Player> thirdParties;
-	private static String thirdPartiesResponseContent;		
+	private static String thirdPartiesResponseContent;	
+	private static ArrayList<String> inBuffer;
 	private static String verb;
+	private static Map map;
 	
+	public CommandManager() {
+		playerManager = new PlayerManager();
+		map = new Map();
+		thirdParties = new ArrayList<Player>();
+	}
 	
-	public static ArrayList<DatagramPacket> process(DatagramPacket receivePacket, ArrayList<String> inBuffer) {
+	public static ArrayList<DatagramPacket> process(DatagramPacket receivePacket) throws NullPointerException {
 		
-		sb.setLength(0);
+		sb.setLength(0);		
 		response = null;
 		player = null;
 		playerIP = receivePacket.getAddress();
 		location = null; 
-		playerResponseContent = null;
-		thirdParties = null;
-		thirdPartiesResponseContent = null;		
+		playerResponseContent = "";
+		thirdPartiesResponseContent = "";		
+		splitPackage(receivePacket);
 		verb = inBuffer.get(0);
 		System.out.println(verb);
 		
 		if (verb.equals("LOGIN")) {
+			System.out.println(inBuffer.get(1));
+			System.out.println(playerIP);
 			player = PlayerManager.login(inBuffer.get(1), playerIP);
     		location = Map.getRandomRoom();
-			player.setLocation(location);
+			location.addPlayer(player);
+    		player.setLocation(location);
 			sb.append("Bem vindo, " + player.getID() + "\n");
-    		sb.append("Sua localização inicial é: " + location.getColor() + "\n");
+    		sb.append("Sua localização inicial é no quarto " + location.getColor() + "\n");
     		sb.append(location.getDescription() + "\n");
     		playerResponseContent = sb.toString();
     	}
 		
-		else {
-			
+		else {			
 			player = PlayerManager.getPlayerByIPAddress(playerIP);
 			location = player.getLocation();
 			String direction = null;
-			
 			switch(verb) {
 			
 				case "EXAMINAR":
 	        		String target = inBuffer.get(1);
-	        		direction = inBuffer.get(2);
+	        		System.out.println(target);
 	        		
 	        		switch(target) {
 					
@@ -67,7 +73,7 @@ public final class CommandManager {
 						sb.append(location.getDescription());
 		    			playerResponseContent = sb.toString();
 		    			thirdParties = location.getThirdParties(player);
-		    			if(!thirdParties.equals(null))
+		    			if(!thirdParties.isEmpty())
 	        				thirdPartiesResponseContent = player.getID() + " examinou a sala";
 		    			break;
 				
@@ -80,11 +86,11 @@ public final class CommandManager {
 						else {
 							sb.append(door.getDescription());
 							thirdParties = location.getThirdParties(player);
-			    			if(!thirdParties.equals(null))
+			    			if(!thirdParties.isEmpty())
 		        				thirdPartiesResponseContent = player.getID() + " examinou a porta " + direction;
 						}
 						
-						playerResponseContent = sb.toString();
+						playerResponseContent = "A porta ao " + direction + " parece ser feita de metais " + sb.toString();
 						break;
 			    		
 					default:
@@ -92,7 +98,7 @@ public final class CommandManager {
 							AbstractObject auxItem = location.getItem(target);
 							sb.append(auxItem.getDescription());
 							thirdParties = location.getThirdParties(player);
-			    			if(!thirdParties.equals(null))
+							if(!thirdParties.isEmpty())
 		        				thirdPartiesResponseContent = player.getID() + " examinou " + direction;
 						}
 						
@@ -106,10 +112,10 @@ public final class CommandManager {
 			
 		        case "MOVER":
 	            	
-	            	direction = inBuffer.get(2);
+	            	direction = inBuffer.get(1);
 	            	Door door = getDoor(location, direction);
 	            	
-	            	if(door.equals(null))
+	            	if(door == null)
         				sb.append("Impossível mover: essa sala não tem porta na direção " + direction);
         			
         			else {
@@ -121,7 +127,8 @@ public final class CommandManager {
         					Room destination = location.getDestination(direction);
         					location.removePlayer(player);
         					destination.addPlayer(player);
-        					sb.append("Você se moveu para o " + direction);
+        					player.setLocation(destination);
+        					sb.append("Você se moveu para o " + direction + "\n");
         					sb.append(destination.getDescription());
         					thirdParties = location.getThirdParties(player);
         				}
@@ -129,7 +136,7 @@ public final class CommandManager {
         			
         			playerResponseContent = sb.toString();
         			
-        			if(!thirdParties.equals(null))
+        			if(!thirdParties.isEmpty())
         				thirdPartiesResponseContent = player.getID() + " moveu para o " + direction;
         			break;
 	            	
@@ -148,7 +155,7 @@ public final class CommandManager {
         			
         			playerResponseContent = sb.toString();
         			
-        			if(!thirdParties.equals(null))
+        			if(!thirdParties.isEmpty())
         				thirdPartiesResponseContent = player.getID() + " pegou o item " + target;
         				        			
 	                break;
@@ -169,19 +176,26 @@ public final class CommandManager {
         			
         			playerResponseContent = sb.toString();
         			
-        			if(!thirdParties.equals(null))
+        			if(!thirdParties.isEmpty())
         				thirdPartiesResponseContent = player.getID() + " largou o item " + target;
         					            	
 	            	break;
 	            
 	            case "INVENTORIO":
-	            	for(AbstractObject item : player.getBackPack())
-	            		sb.append(item.getDescription());
+	            	
+	            	ArrayList<AbstractObject> backPack = player.getBackPack();
+	            	
+	            	if(backPack.isEmpty())
+	            		sb.append("Sua mochila está vazia");
+	            	else {
+	            		for(AbstractObject item : backPack)
+	            			sb.append(item.getDescription());
+	            	}
 	            	
 	            	playerResponseContent = sb.toString();
 	            	thirdParties = location.getThirdParties(player);
-	            	if(!thirdParties.equals(null))
-	            		thirdPartiesResponseContent = player.getID() + " examinou seu inventório";
+	            	if(!thirdParties.isEmpty())
+	            		thirdPartiesResponseContent = player.getID() + " examinou a mochila";
 	            	     	
 	            	break;
 	            
@@ -196,7 +210,7 @@ public final class CommandManager {
 	            	String words = sb.toString();
 	            	playerResponseContent = "Você disse '" + words + "'";
 	            	thirdParties = location.getThirdParties(player);
-	            	if(!thirdParties.equals(null))
+	            	if(!thirdParties.isEmpty())
 	            		thirdPartiesResponseContent = player.getID() + "diz '" + words + "'";
 	            	
 	            	break;
@@ -213,11 +227,11 @@ public final class CommandManager {
 	            	String crazyOne = "";
 	            	
 	            	if(player.equals(listener))
-	            		crazyOne = "(Deus tá vendo você andando por aí e resmungando sozinho pelos cantos em labirintos escuros)";
+	            		crazyOne = "(E Deus tá vendo você andando por aí e resmungando sozinho pelos cantos em labirintos escuros)";
 	            	
 	            	playerResponseContent = "Você cochichou '" + words + "' para " + listener.getID() + "\n" + crazyOne;
 	            	thirdParties = location.getThirdParties(player);
-	            	if(!thirdParties.equals(null))
+	            	if(!thirdParties.isEmpty())
 	            		thirdPartiesResponseContent = player.getID() + "diz '" + words + "'";
 	            	
 	            	break;
@@ -232,14 +246,36 @@ public final class CommandManager {
 	        	} 
 		}
 		
-		if(thirdPartiesResponseContent.equals(null))
+		System.out.println(playerResponseContent);
+		
+		if(thirdPartiesResponseContent.equals(""))
 			response = new Response(player, playerResponseContent);
-		else
+		else {
+			System.out.println(playerResponseContent);
 			response = new Response(player, playerResponseContent, thirdParties, thirdPartiesResponseContent);
+		}
 		
 		return ResponseManager.packResponses(response);
 		
      }
+	
+	private static void splitPackage(DatagramPacket receivePackage) {
+		
+		byte[] data = new byte[1024]; 
+		data = receivePackage.getData();
+		String clientMessage = cleanBlankSpaces(data);		
+		String[] command = new String(clientMessage).split("\\s");
+		
+		inBuffer = new ArrayList<String>();
+		
+		for(String s : command)
+			inBuffer.add(s);
+		
+	}
+	
+	private static String cleanBlankSpaces(byte[] data) {
+		return new String(data).trim();		
+	}
 	
 	private static Door getDoor(Room location, String direction) {
 		Door[] doors = new Door[4];
@@ -248,7 +284,7 @@ public final class CommandManager {
 		
 		int target = -1;
 		
-		switch(direction) {
+		switch(direction.toUpperCase()) {
 			case "NORTE":
 				target = 0;
 				break;
@@ -267,7 +303,7 @@ public final class CommandManager {
 		
 		Door door = null;
 		
-		if(target > -1 && !doors[target].equals(null))
+		if(target > -1 && doors[target] != null)
 			door = doors[target];
 		
 		return door;

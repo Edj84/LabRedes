@@ -1,129 +1,152 @@
 package client;
 
-// Envia o pacote contendo um arquivo ao servidor
-
-import java.net.*;// DatagramaSocket,InetAddress,DatagramaPacket
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.Scanner;
 
-public class UDPClient {
+public class UDPClient { 
 	
-	private static String ID;
-	private static byte[] ipAddr;
 	private static InetAddress IPAddress;
-	
-	private static DatagramSocket inSocket;
-	private static DatagramPacket receivePacket;
-	private static byte[] receiveData;
-	
-	private static DatagramSocket outSocket;
-	private static DatagramPacket sendPacket;
-	private static byte[] sendData;
-	
-	private static View userInterface;
+	private static DatagramSocket clientSocket;
 	private static boolean running;
-		
-	public UDPClient(){
-		
-		ipAddr = new byte[]{(byte) 127, (byte) 0, (byte) 0, (byte) 1};
+	private static Scanner scan;
+	private static String command;
+	private static String serverMessage;
+
+	public static void main(String args[]) throws IOException, InterruptedException { 
+
+		// create DatagramSocket and gets ip 
+		clientSocket = new DatagramSocket(7070); 
+		IPAddress = InetAddress.getLocalHost();
+		scan = new Scanner(System.in);
+		serverMessage = "";
 		running = false;
-	}
-	
-	public static void main(String args[]) {
 		
-		UDPClient client = new UDPClient();
-		
-		try {
-			IPAddress = InetAddress.getByAddress(ipAddr);
-			inSocket = new DatagramSocket(6060);
-			outSocket = new DatagramSocket(7070);
-			if(IPAddress != null)
-				System.out.println("IP OK");
-			if(inSocket != null)
-				System.out.println("IN OK");
-			if(outSocket != null)
-				System.out.println("OUT OK");
+		// create a sender thread with a nested runnable class definition 
+		Thread send = new Thread(new Runnable() { 
+			
+			@Override
+			public void run() { 
+				try { 
+					
+					while (true) { 
+						synchronized (this) { 
+							
+							prompt(); 
+							send(command);
+							
+							// exit condition 
+							if (command.toUpperCase().equals("SAIR")) { 
+								System.out.println("Fugindo da briga...");
+								break; 
+							}
+						} 
+					}
+				}
 				
-		} 
+				catch (IOException e) { 
+					System.out.println("Exception occured"); 
+				} 
+			} 
+		});
 		
-		catch (UnknownHostException e) {
-			System.out.println("Unable to find server");
-		} 
-		
-		catch (SocketException e) {
-			System.out.println("Unable to open socket");
-		}
-		
-		
-		init();
-		
-		new Thread(send).start();
-		new Thread(receive).start();
+		// create a receiver thread with a nested runnable class definition 
+		Thread receive = new Thread(new Runnable() {
+			
+			@Override
+			public void run() { 
+				try { 
+
+					while (true) { 
+						synchronized (this) { 
+
+							receive();
+							
+							//exit condition 
+							if (serverMessage.toUpperCase().equals("PARAR")) { 
+								System.out.println("O jogo acabou"); 
+								break;
+							} 
+						} 
+					} 
+				} 
+				catch (IOException e) { 
+					System.out.println("Exception occured"); 
+				} 
+			}
+		}); 
+
+		send.start(); 
+		receive.start();
 		
 		while(true) {
 			send.run();
 			receive.run();
 		}
+
+		//send.join(); 
+		//receive.join(); 
 	}
 	
-	public String getID() {
-		return ID;
-	}
-	
-	public void setID(String ID) {
-		this.ID = ID;
-	}
-	
-	private static void init() {
-		userInterface = new View();
-		userInterface.welcome();
-	}
-	
-	private static Runnable send = new Runnable() {
+	private static String send(String command) throws IOException {
 		
-		public void run() {
-						
-			if(!running) {				
-				
-				String command = userInterface.login();
-						
-				if(command != null)
-					running = true;
-				
-				else 
-		        	command = userInterface.prompt();           		
-		        	
-				try {
-					sendData = new byte[4096];
-				    sendData = command.getBytes();
-				    System.out.println(sendData.length);
-				    sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
-				    outSocket.send(sendPacket);
-				} 
-				catch (IOException e) {
-					System.out.println("Unable to send message to server");
-				}		        
-		    } 
-			
-		}
-	};
+		byte[] sendData = new byte[1024];
+		sendData = command.getBytes();
+
+		DatagramPacket sendPackage = new DatagramPacket(sendData, sendData.length, IPAddress, 8080);
+		clientSocket.send(sendPackage); 
+		
+		System.out.println("Enviei ao servidor: " + command);
+
+		return command;		 
+	}
 	
-	private static Runnable receive = new Runnable() {
+	private static void receive() throws IOException {
+		byte[] receiveData = new byte[1024]; 
+		DatagramPacket receivePackage = new DatagramPacket(receiveData,receiveData.length);
+		clientSocket.receive(receivePackage); 
+		String serverMessage = (new String(receiveData)).trim(); 
+		System.out.println("Mensagem do servidor: " + serverMessage);
 		
-		public void run() {
-			
-			try {
-				receiveData = new byte[256];
-				receivePacket = new DatagramPacket(receiveData, receiveData.length);
-				inSocket.receive(receivePacket);
-				receiveData = receivePacket.getData();
-				String serverContent = new String(receiveData);
-				System.out.println("Message from server:\n" + serverContent);
-			} 
-			
-			catch (IOException e) {
-				System.out.println("Unable to receive message from server");
-			}
-		}
-	};
+		serverMessage = "Mensagem do servidor: " + serverMessage;
+	} 
+	
+	public static void welcome() {
+		title();
+		System.out.println("Bem-vindo(a) ao NOME DO JOGO!\n");
+	}
+	
+	public static void title() {
+		System.out.println("####################");
+		System.out.println("#                  #");
+		System.out.println("#   NOME DO JOGO   #");
+		System.out.println("#                  #");
+		System.out.println("####################\n");
+	}
+	
+	public static void goal() {
+		System.out.println("Seu objetivo neste jogo é OBJETIVO DO JOGO...\n");
+	}
+	
+	public static void login() {
+		scan = new Scanner(System.in);
 		
-}
+		System.out.println("Para começar, insira seu nome de usuário.");
+		System.out.print("Usuário: ");
+		
+		String login = scan.nextLine();
+		command = "LOGIN " + login.toUpperCase().trim();		
+	}
+	
+	public static void prompt() {
+		scan = new Scanner(System.in);
+		
+		System.out.println("O que você quer fazer?");
+		String text = scan.nextLine();
+		
+		command = text.toUpperCase();		
+	}
+		
+} 
