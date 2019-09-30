@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - UDPClient",
+            "request": "launch",
+            "mainClass": "client.UDPClient",
+            "projectName": "T1"
+        }
+    ]
+}

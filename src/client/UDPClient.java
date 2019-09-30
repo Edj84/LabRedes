@@ -19,7 +19,8 @@ public class UDPClient {
 
 		// create DatagramSocket and gets ip 
 		clientSocket = new DatagramSocket(7070); 
-		IPAddress = InetAddress.getLocalHost();
+		byte[] ipAddr = new byte[]{(byte) 10, (byte) 32, (byte) 143, (byte) 102};
+		IPAddress = InetAddress.getByAddress(ipAddr);
 		scan = new Scanner(System.in);
 		serverMessage = "";
 		running = false;

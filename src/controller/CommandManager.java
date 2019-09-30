@@ -217,10 +217,11 @@ public final class CommandManager {
 	            	
 	            
 	            case "COCHICAR":
-	            	target = inBuffer.get(inBuffer.size()-1);
+					target = inBuffer.remove(inBuffer.size()-1);
+					
 	            	Player listener = location.getPlayerByID(target);
 	            	
-	            	for(int i = 1; i < inBuffer.size()-1; i++) 
+	            	for(int i = 1; i < inBuffer.size(); i++) 
 	            		sb.append(inBuffer.get(i) + " ");
 	            	
 	            	words = sb.toString();
