@@ -18,6 +18,11 @@ public class ResponseManager {
 	public static ArrayList<DatagramPacket> packResponses(Response response) {
 		
 		responses = response.getServerMessages();
+		System.out.println("teste");
+		for(int i = 0; i< responses.size(); i++) {
+			System.out.println(responses.get(i));
+		}
+		System.out.println("cabou teste");
 		System.out.println("responses " + responses.size());
 		clients = response.getListeners();
 		System.out.println("clients " + clients.size());
@@ -26,7 +31,7 @@ public class ResponseManager {
 		if(!responses.isEmpty()) {
 			
 			sendData = responses.remove(0).getBytes();
-			client = response.getListeners().remove(0);
+			client = response.getPlayer();
 			sendPacket = new DatagramPacket(sendData, sendData.length, client.getIPAddress(), 7070);
 			sendPackets = new ArrayList<DatagramPacket>();
 			sendPackets.add(sendPacket);

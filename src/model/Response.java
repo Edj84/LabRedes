@@ -19,7 +19,6 @@ public class Response {
 	public Response (Player player, String playerResponse) {
 		this.player = player;
 		this.listeners = new ArrayList<Player>();
-		listeners.add(player);
 		serverMessages = new ArrayList<String>();
 		serverMessages.add(playerResponse);		
 	}

@@ -233,7 +233,7 @@ public final class CommandManager {
 	            	playerResponseContent = "Você cochichou '" + words + "' para " + listener.getID() + "\n" + crazyOne;
 	            	thirdParties = location.getThirdParties(player);
 	            	if(!thirdParties.isEmpty())
-	            		thirdPartiesResponseContent = player.getID() + "diz '" + words + "'";
+	            		thirdPartiesResponseContent = player.getID() + " diz '" + words + "'";
 	            	
 	            	break;
 	            	
