@@ -13,10 +13,13 @@ public class Map {
 	public Map() {
 		
 		rooms = new ArrayList<Room>();
+		Key monsterKey = new Key("...um material radiotivo?!");
+		Key RedYellowKey = new Key(" vermelhos e amarelos");
 		
 		Room monsterRoom = new Room("do Monstro");
 		rooms.add(monsterRoom);
-		Room yellowRoom = new Room("amarelo"); 
+		Room yellowRoom = new Room("amarelo");
+		yellowRoom.addItem(monsterKey);
 		rooms.add(yellowRoom);
 		Room redRoom = new Room("vermelho"); 
 		rooms.add(redRoom);
@@ -24,11 +27,12 @@ public class Map {
 		rooms.add(whiteRoom);
 		Room blackRoom = new Room("preto");
 		rooms.add(blackRoom);
+		blackRoom.addItem(RedYellowKey);
 		Room blueRoom = new Room("azul"); 
 		rooms.add(blueRoom);
 				
-		Key monsterKey = new Key("...um material radiotivo?!");
-		Key RedYellowKey = new Key(" vermelhos e amarelos");
+
+		
 				
 		Door monsterDoor = new Door("...verdes, que brilham no escuro", monsterRoom, redRoom, monsterKey, true);
 		monsterRoom.setDoor(monsterDoor, 0);
