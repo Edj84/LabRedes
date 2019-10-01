@@ -117,6 +117,9 @@ public class Room extends AbstractObject {
     }
     
     public boolean search(String item) {
+		if(item == "chave"){
+			return true;
+		}
     	
     	return items.stream()
     		 .anyMatch(i -> i.getDescription().equals(item));    		
@@ -133,7 +136,7 @@ public class Room extends AbstractObject {
     public AbstractObject getItem(String item) {
     	
     	AbstractObject obj = items.stream()
-    		 .filter(i -> i.getDescription().equals(item))
+    		 .filter(i -> i instanceof Key)
     		 .findFirst()
     		 .orElseGet(null);
     	
