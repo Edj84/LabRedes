@@ -9,6 +9,7 @@ import model.Map;
 import model.Player;
 import model.Response;
 import model.Room;
+import model.Key;
 
 public final class CommandManager {
 	
@@ -127,9 +128,12 @@ public final class CommandManager {
         					Room destination = location.getDestination(direction);
         					location.removePlayer(player);
         					destination.addPlayer(player);
-        					player.setLocation(destination);
-        					sb.append("Você se moveu para o " + direction + "\n");
-        					sb.append(destination.getDescription());
+							player.setLocation(destination);
+							sb.append("Você se moveu para o " + direction + "\n");
+							sb.append(destination.getDescription());
+							if(destination.equals(Map.getMonsterRoom())){
+								sb.append("Você venceu");
+							}
         					thirdParties = location.getThirdParties(player);
         				}
         			}
@@ -199,7 +203,29 @@ public final class CommandManager {
 	            	     	
 	            	break;
 	            
-	            case "USAR": 
+				case "USAR": 
+					String key = inBuffer.get(1);
+					direction = inBuffer.get(2);
+					Door doorr = getDoor(location, direction);						
+					if(doorr == null)
+						sb.append("Impossível usar: essa sala não tem porta na direção " + direction);
+					else {
+						thirdParties = location.getThirdParties(player);
+						if(!thirdParties.isEmpty()){
+							thirdPartiesResponseContent = player.getID() + " usou a chave na porta " + direction;
+						}
+						Key keys = doorr.getRequirement();
+						if(!player.searchBackPack(keys.getDescription())) 
+        					sb.append("Voce nao possui a chave necessaria para esta porta");
+						else {	
+							AbstractObject item = player.getObjectFromBackpack(keys.getDescription());
+							doorr.useKey(keys);
+							sb.append("Você abriu a porta");
+							thirdParties = location.getThirdParties(player);				
+						}
+					}
+					
+					playerResponseContent = sb.toString();
 	            	break;
 	            	
 	            case "FALAR":

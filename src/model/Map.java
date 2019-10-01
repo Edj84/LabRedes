@@ -29,11 +29,8 @@ public class Map {
 		rooms.add(blackRoom);
 		blackRoom.addItem(RedYellowKey);
 		Room blueRoom = new Room("azul"); 
-		rooms.add(blueRoom);
-				
+		rooms.add(blueRoom);			
 
-		
-				
 		Door monsterDoor = new Door("...verdes, que brilham no escuro", monsterRoom, redRoom, monsterKey, true);
 		monsterRoom.setDoor(monsterDoor, 0);
 		redRoom.setDoor(monsterDoor, 1);
@@ -56,12 +53,17 @@ public class Map {
 		
 		ArrayList<Room> auxRooms = new ArrayList<Room>(rooms);
 		auxRooms.remove(0);
+		auxRooms.remove(0);
 		
 		int index = Rand.getRandInt(0, auxRooms.size());
 		
-		Room randRoom = rooms.get(index);
+		Room randRoom = auxRooms.get(index);
 		
 		return randRoom;		
+	}
+
+	public static Room getMonsterRoom(){
+		return rooms.get(0);
 	}
 	
 	

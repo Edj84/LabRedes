@@ -117,7 +117,7 @@ public class Room extends AbstractObject {
     }
     
     public boolean search(String item) {
-		if(item == "chave"){
+		if(item.toUpperCase().equals("CHAVE")){
 			return true;
 		}
     	

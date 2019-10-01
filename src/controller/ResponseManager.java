@@ -18,11 +18,6 @@ public class ResponseManager {
 	public static ArrayList<DatagramPacket> packResponses(Response response) {
 		
 		responses = response.getServerMessages();
-		System.out.println("teste");
-		for(int i = 0; i< responses.size(); i++) {
-			System.out.println(responses.get(i));
-		}
-		System.out.println("cabou teste");
 		System.out.println("responses " + responses.size());
 		clients = response.getListeners();
 		System.out.println("clients " + clients.size());

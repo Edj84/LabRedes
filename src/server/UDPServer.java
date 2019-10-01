@@ -32,7 +32,7 @@ public class UDPServer {
 			System.out.println("Unable to get server IPAddress");
 		}
 		try {
-			serverSocket = new DatagramSocket(8081);
+			serverSocket = new DatagramSocket(8080);
 		} catch (SocketException e) {
 			System.out.println("Unable to start server socket");
 		} 
