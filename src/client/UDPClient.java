@@ -20,6 +20,17 @@ public class UDPClient {
 		// create DatagramSocket and gets ip 
 		clientSocket = new DatagramSocket(7070); 
 		byte[] ipAddr = new byte[]{(byte) 10, (byte) 32, (byte) 143, (byte) 102};
+		String[] split = null;
+		while (true) {
+			System.out.println("Digite o IP do servidor?(EX. 10.32.161.42)");
+			String text = scan.nextLine();
+			split = text.split("\\.");
+			if(split.length == 4){
+				break;
+			}
+			System.out.println("Você nao digitou um endereço IP válido");
+		}
+		byte[] ipAddr = new byte[]{(byte) Integer.parseInt(split[0]), (byte) Integer.parseInt(split[1]), (byte) Integer.parseInt(split[2]), (byte) Integer.parseInt(split[3])};
 		IPAddress = InetAddress.getByAddress(ipAddr);
 		scan = new Scanner(System.in);
 		serverMessage = "";
