@@ -12,8 +12,11 @@ public class App{
     
 
     public static void main(String[] args){
-        node = new Node("Nó");
+        node = new Node();
+        
+    }
 
+    /*
     Thread send = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
@@ -78,5 +81,5 @@ public class App{
 		String aux = new String(sendData).trim();
 		System.out.println("Enviei ao cliente " + aux);
 	}
-
+*/
 }
