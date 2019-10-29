@@ -1,5 +1,15 @@
+package controller;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+
+import model.Node;
+
 public class App{
-    private Node node;
+    private static Node node;
+    private static byte[] receiveData;
+    private static DatagramPacket receivePacket;
+    
 
     public static void main(String[] args){
         node = new Node("Nó");
@@ -53,8 +63,8 @@ public class App{
 		
 	} 
 	
-	private static void receive() throws IOException {
-		receiveData = new byte[1024];
+	private static void receive(DatagramPacket receivePacket) throws IOException {
+		byte[] receiveData = new byte[1024];
 		receivePacket = new DatagramPacket(receiveData, receiveData.length); 
 		serverSocket.receive(receivePacket);
 		//refatorar; pacote mais complexo! abrir receiveData e desmembrar 
