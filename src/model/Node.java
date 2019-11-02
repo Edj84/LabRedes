@@ -43,7 +43,7 @@ public class Node{
 		int nextNodePort = Integer.parseInt(config.get(1));
     	
     	//Setting up inSocket
-    	inSocket = new UDPSocket(nextNodePort-1);
+    	inSocket = new UDPSocket(8080);
     	
     	//Setting up outSocket
     	outSocket = new UDPSocket(nextNodePort);
@@ -58,24 +58,29 @@ public class Node{
 
 
 	private void readConfig() {
-    	config = new ArrayList<String>();
+    	
+		config = new ArrayList<String>();
 		File file = new File("config.txt");
     	Scanner scan = null;
-		try {
+		
+    	try {
 			scan = new Scanner(file);
 						
-			//Reading next node IPAddress anda port
+			//Reading next node IPAddress and port
 			String aux = scan.nextLine();
 			
 			//Split IP and port
 			String[] parts = aux.split(":");
-			for(String s : parts) 
+			for(String s : parts) { 
 				config.add(s);
+				System.out.println("Adicionando " + s);
+			}
 							
 			//Reading node ID, token time and token manager flag
 			while(scan.hasNextLine()) {
 				aux = scan.nextLine();
 				config.add(aux);
+				System.out.println("Adicionando " + aux);
 			}
 		
 		} 
@@ -93,6 +98,18 @@ public class Node{
 	public boolean hasToken() {
     	return token != null;
     }
+	
+	public void send() {
+		try {
+			packMan.createPacket(ID, "Manu", "19385749", "Oi, mundo!");
+			outSocket.send(packMan.getPacket());
+		}
+		
+		catch (IOException e) {
+			System.out.println("ERROR: Unable to send packet");
+		}
+		
+	}
 	
 	public void receive() {
 		try {

@@ -18,12 +18,9 @@ public class UDPSocket {
 			socket = new DatagramSocket(port);
 						
 		} catch (SocketException e) {
-			System.out.println("ERROR: Unable to create socket");
+			System.out.println("ERROR: Unable to create socket using port " + port);
 		}
 	}
-	
-	
-	
 	
 	public void send(DatagramPacket packet) throws IOException {
 		socket.send(packet);		

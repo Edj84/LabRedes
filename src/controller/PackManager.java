@@ -15,7 +15,6 @@ public class PackManager {
 		queue = new ArrayList<DatagramPacket>();
 		sent = new ArrayList<DatagramPacket>();
 		this.nextIPAddress = IP;
-		sb = new StringBuilder();
 	}
 	
 	public ArrayList<String> unpack(DatagramPacket packet){
@@ -29,19 +28,25 @@ public class PackManager {
 	
 	private ArrayList<String> separateData(String cleanData) {
 		
+		//System.out.println("Recebi para separar " + cleanData);
 		ArrayList<String> msgParts = new ArrayList<String>();
 		
-		msgParts.add(cleanData.substring(0, 4));
+		String type =  cleanData.substring(0, 4);
 		
-		String aux = cleanData.substring(5);
+		msgParts.add(type);
+		
+		cleanData = cleanData.substring(5);
+		//System.out.println("Tirei pack type. Data agora é " + cleanData);
 		int separatorIndex;
 		
 		for(int n = 1; n < 5; n++) {
-			separatorIndex = aux.indexOf(":");
+			separatorIndex = cleanData.indexOf(":");
+			//System.out.println("N é " + n + " Separator index is " + separatorIndex);
 			String part = cleanData.substring(0, separatorIndex);
+			//System.out.println("Separei " + part);
 			msgParts.add(part);
-			System.out.println("Adicionei " + part);
-			aux = cleanData.substring(separatorIndex + 1);									
+			cleanData = cleanData.substring(separatorIndex + 1);
+			//System.out.println("Data agora é " + cleanData);
 		}
 		
 		return msgParts;
@@ -52,7 +57,9 @@ public class PackManager {
 	}
 		
 	public void createPacket(String originID, String destinationID, String CRC, String content) {
-		//2345;naocopiado:Bob:Alice:19385749:Oi Mundo!
+		
+		sb = new StringBuilder();
+		
 		sb.append("2345;");
 		sb.append("naocopiado:");
 		sb.append(originID + ":");
