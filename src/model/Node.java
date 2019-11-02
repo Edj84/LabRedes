@@ -3,6 +3,7 @@ package model;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,9 +12,8 @@ import controller.TokenManager;
 
 public class Node{
     private String ID;
-    private Node next;
-    private UDPSocket in;
-    private UDPSocket out;
+    private UDPSocket inSocket;
+    private UDPSocket outSocket;
     private PackManager packMan;
     private TokenManager tokenMan;
     private ArrayList<String> config;
@@ -21,11 +21,34 @@ public class Node{
 
     public Node(){
         readConfig();
-        setConfig();
-         
-        tokenMan = new TokenManager();
+        setConfig();        
     }
     
+
+    private void setConfig() {
+    	
+    	//Setting up IP for next node in ring and pack management module
+    	byte[] IP = config.get(0).getBytes();
+    	packMan = new PackManager(IP);   	
+    	
+    	//Reading next node port
+    	int nextNodePort = Integer.parseInt(config.get(1));
+    	
+    	//Setting up inSocket
+    	inSocket = new UDPSocket(nextNodePort-1);
+    	
+    	//Setting up outSocket
+    	outSocket = new UDPSocket(nextNodePort);
+    	
+    	//Setting up node ID
+    	ID = config.get(2);
+    	
+    	//Setting up token management module
+    	tokenMan = new TokenManager(Integer.parseInt(config.get(3)), Boolean.parseBoolean(config.get(4)));    			
+    			
+	}
+
+
 	private void readConfig() {
     	config = new ArrayList<String>();
 		File file = new File("config.txt");

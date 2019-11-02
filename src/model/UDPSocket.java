@@ -1,76 +1,29 @@
+package model;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Scanner;
-import controller.
+import java.net.SocketException;
+
 
 public class UDPSocket { 
 	
 	
 	private static DatagramSocket socket;
 	  
-	public UDPSocket(){
+	public UDPSocket(int port){
 		
-        
-    // create DatagramSocket and gets ip 
-	socket = new DatagramSocket(7070);
-		
-	//create a sender thread with a nested runnable class definition 
-		Thread send = new Thread(new Runnable() { 
-			
-			@Override
-			public void run() { 
-				try { 
-					
-					while (true) { 
-						synchronized (this) { 
-							
-							PackManager.
-							send();
-							
-						} 
-					}
-				}
-				
-				catch (IOException e) { 
-					System.out.println("Exception occured"); 
-				} 
-			} 
-		});
-		
-		// create a receiver thread with a nested runnable class definition 
-		Thread receive = new Thread(new Runnable() {
-			
-			@Override
-			public void run() { 
-				try { 
-
-					while (true) { 
-						synchronized (this) { 
-
-							receive();
-							
-							
-							} 
-						} 
-					} 
-				} 
-				catch (IOException e) { 
-					System.out.println("Exception occured"); 
-				} 
-			}
-		}); 
-
-		send.start(); 
-		receive.start();
-		
-		while(true) {
-			send.run();
-			receive.run();
+		try {
+			socket = new DatagramSocket(port);
+						
+		} catch (SocketException e) {
+			System.out.println("ERROR: Unable to create socket");
 		}
-		
 	}
+	
+	
+	
 	
 	private static void send(DatagramPacket packet) throws IOException {
 		socket.send(packet);		

@@ -2,18 +2,24 @@ package controller;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public abstract class PackManager {
-	private static ArrayList<DatagramPacket> queue;
-	private static ArrayList<DatagramPacket> sent;
-	private static InetAddress nextIPAddress;
-	private static StringBuilder sb;
+public class PackManager {
+	private ArrayList<DatagramPacket> queue;
+	private ArrayList<DatagramPacket> sent;
+	private InetAddress nextIPAddress;
+	private StringBuilder sb;
 	
-	public PackManager(InetAddress nextIPAddress) {
+	public PackManager(byte[] nextIPAddress) {
 		queue = new ArrayList<DatagramPacket>();
 		sent = new ArrayList<DatagramPacket>();
-		this.nextIPAddress = nextIPAddress;
+		try {
+			this.nextIPAddress = InetAddress.getByAddress(nextIPAddress);
+		} catch (UnknownHostException e) {
+			System.out.println("ERROR: Unable to set IP for next node in token ring");
+			e.printStackTrace();
+		}
 		sb = new StringBuilder();
 	}
 	

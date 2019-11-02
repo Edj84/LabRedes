@@ -5,10 +5,15 @@ import java.security.Timestamp;
 
 public final class TokenManager {
     private DatagramPacket token;
+    private int retentionLapse;
     private long timeOfCreation;
+    private boolean manager;
     
-    public TokenManager() {
-    	
+    
+    
+    public TokenManager(int retentionLapse, boolean manager) {
+    	this.manager = manager;
+    	this.retentionLapse = retentionLapse;
     }
     
     private void createToken() {
