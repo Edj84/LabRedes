@@ -10,7 +10,7 @@ import java.net.SocketException;
 public class UDPSocket { 
 	
 	
-	private static DatagramSocket socket;
+	private DatagramSocket socket;
 	  
 	public UDPSocket(int port){
 		
@@ -25,16 +25,15 @@ public class UDPSocket {
 	
 	
 	
-	private static void send(DatagramPacket packet) throws IOException {
+	public void send(DatagramPacket packet) throws IOException {
 		socket.send(packet);		
 	}
 	
-	private static void receive() throws IOException {
+	public DatagramPacket receive() throws IOException {
 		byte[] receiveData = new byte[1024]; 
 		DatagramPacket receivePackage = new DatagramPacket(receiveData,receiveData.length);
-		socket.receive(receivePackage); 
-		String content = (new String(receiveData)).trim();		
-	} 
-	
+		socket.receive(receivePackage);
+		return receivePackage;
+	}
 			
 } 

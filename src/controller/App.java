@@ -13,6 +13,7 @@ public class App{
 
     public static void main(String[] args){
         node = new Node();
+        node.receive();
         
     }
 

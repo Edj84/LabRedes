@@ -11,25 +11,46 @@ public class PackManager {
 	private InetAddress nextIPAddress;
 	private StringBuilder sb;
 	
-	public PackManager(byte[] nextIPAddress) {
+	public PackManager(InetAddress IP) {
 		queue = new ArrayList<DatagramPacket>();
 		sent = new ArrayList<DatagramPacket>();
-		try {
-			this.nextIPAddress = InetAddress.getByAddress(nextIPAddress);
-		} catch (UnknownHostException e) {
-			System.out.println("ERROR: Unable to set IP for next node in token ring");
-			e.printStackTrace();
-		}
+		this.nextIPAddress = IP;
 		sb = new StringBuilder();
 	}
 	
 	public ArrayList<String> unpack(DatagramPacket packet){
 		
+		byte[] rawData = new byte[1024]; 
+		rawData = packet.getData();
+		String cleanData = cleanBlankSpaces(rawData);		
 		
-		
-		return null; 
+		return separateData(cleanData);
 	}
 	
+	private ArrayList<String> separateData(String cleanData) {
+		
+		ArrayList<String> msgParts = new ArrayList<String>();
+		
+		msgParts.add(cleanData.substring(0, 4));
+		
+		String aux = cleanData.substring(5);
+		int separatorIndex;
+		
+		for(int n = 1; n < 5; n++) {
+			separatorIndex = aux.indexOf(":");
+			String part = cleanData.substring(0, separatorIndex);
+			msgParts.add(part);
+			System.out.println("Adicionei " + part);
+			aux = cleanData.substring(separatorIndex + 1);									
+		}
+		
+		return msgParts;
+	}
+
+	private static String cleanBlankSpaces(byte[] data) {
+		return new String(data).trim();		
+	}
+		
 	public void createPacket(String originID, String destinationID, String CRC, String content) {
 		//2345;naocopiado:Bob:Alice:19385749:Oi Mundo!
 		sb.append("2345;");

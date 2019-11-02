@@ -2,8 +2,10 @@ package model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -24,15 +26,21 @@ public class Node{
         setConfig();        
     }
     
-
     private void setConfig() {
     	
     	//Setting up IP for next node in ring and pack management module
-    	byte[] IP = config.get(0).getBytes();
-    	packMan = new PackManager(IP);   	
+    	InetAddress IP;
+		try {
+			IP = InetAddress.getByName(config.get(0));
+			packMan = new PackManager(IP);   	
+		} 
+		
+		catch (UnknownHostException e) {
+			System.out.println("ERROR: Unable to set IP for next node in token ring");
+		}
     	
     	//Reading next node port
-    	int nextNodePort = Integer.parseInt(config.get(1));
+		int nextNodePort = Integer.parseInt(config.get(1));
     	
     	//Setting up inSocket
     	inSocket = new UDPSocket(nextNodePort-1);
@@ -55,23 +63,19 @@ public class Node{
     	Scanner scan = null;
 		try {
 			scan = new Scanner(file);
-			scan.useDelimiter(":");
+						
+			//Reading next node IPAddress anda port
+			String aux = scan.nextLine();
 			
-			//Reading next node IPAddress
-			String aux = scan.next();
-			System.out.println(aux);
-			config.add(aux);
-			//Reading next node port
-			aux = scan.next();
-			System.out.println(aux);
-			config.add(aux);
-			scan.reset();
-			
+			//Split IP and port
+			String[] parts = aux.split(":");
+			for(String s : parts) 
+				config.add(s);
+							
 			//Reading node ID, token time and token manager flag
-			while(scan.hasNext()) {
-				aux = scan.next();
+			while(scan.hasNextLine()) {
+				aux = scan.nextLine();
 				config.add(aux);
-				System.out.println(aux);
 			}
 		
 		} 
@@ -89,5 +93,16 @@ public class Node{
 	public boolean hasToken() {
     	return token != null;
     }
+	
+	public void receive() {
+		try {
+			DatagramPacket packet = inSocket.receive();
+			packMan.unpack(packet);
+		} 
+		
+		catch (IOException e) {
+			System.out.println("ERROR: Unable to receive packet");
+		}
+	}
 	
 }
