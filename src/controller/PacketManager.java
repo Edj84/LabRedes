@@ -83,14 +83,16 @@ public class PacketManager {
 		
 		sendData = aux.getBytes();
 
-		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8082);		
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8080);		
 		
 		return sendPacket;
 		
 	}
 	
 	public void queueNewPacket(DatagramPacket sendPacket) {
-		queue.add(sendPacket);
+		if(queue.size() <= 10 ) {
+			queue.add(sendPacket);
+		}
 	}
 	
 	public void queuePacket(DatagramPacket sendPacket) {

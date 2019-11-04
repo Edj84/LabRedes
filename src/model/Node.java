@@ -55,7 +55,7 @@ public class Node{
     	inSocket = new UDPSocket(8080);
     	
     	//Setting up outSocket
-    	outSocket = new UDPSocket(nextNodePort);
+    	outSocket = new UDPSocket(8081);
     	
     	//Setting up node ID
     	ID = config.get(2);
@@ -125,10 +125,30 @@ public class Node{
 	public void sendFromQueue() {
 		
 		if(hasToken) {
+			
 			DatagramPacket sendPacket = packMan.getPacketFromQueue();
 				
 			if(sendPacket != null)
 				send(sendPacket);
+			
+			else {
+				
+				try {
+					Thread.sleep(2000);
+					sendPacket = packMan.getPacketFromQueue();
+					
+					if(sendPacket != null)
+						send(sendPacket);
+					else
+						send(tokenMan.createToken());
+				} 
+				
+				catch (InterruptedException e) {
+					System.out.println("ERROR: unable to send packet or token away");
+				}
+					
+			}
+				
 		}
 		
 	}
@@ -256,19 +276,18 @@ public class Node{
 	
 	public void tokenScramble() {
 		
-		if(Rand.getRandInt(0, 20) > 1) {
+		if(Rand.getRandInt(0, 20) > 21) {
 			DatagramPacket token = tokenMan.createToken();
 			send(token);
 			System.out.println("Ops, that token just slipped out. Sorry about that");
 		}
 		
 		if(hasToken) {
-			if(Rand.getRandInt(0, 20) > 1) 
+			if(Rand.getRandInt(0, 20) > 21) 
 				tokenMan.destroyToken();
 			System.out.println("Damn, I killed your token pet. Sorry, pal!");
 		}
 	}
-	
 	
 	public void generateMessage() {
 		ArrayList<String> data = messageMan.getNewMessage();		

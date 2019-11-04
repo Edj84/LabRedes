@@ -14,7 +14,25 @@ public class App{
     
     public static void main(String[] args){
         node = new Node();
-               
+       
+        Thread createMsg = new Thread(new Runnable() { 
+			@Override
+			public void run() { 
+				while (true) { 
+					synchronized (this) { 
+						try {
+							Thread.sleep(10000);
+							node.generateMessage();		
+						} 
+						catch (InterruptedException e) {
+							System.out.println("ERROR: I won't say anything untill I see a lawyer");
+						}
+										
+					} 
+				} 
+			} 
+		});  
+        
        Thread send = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
