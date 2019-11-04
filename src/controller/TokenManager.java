@@ -25,7 +25,7 @@ public final class TokenManager {
 		
 		sendData = "1234".getBytes();
 
-		DatagramPacket newToken = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8082);
+		DatagramPacket newToken = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8080);
     	
     	return newToken;
     }
@@ -68,9 +68,10 @@ public final class TokenManager {
         
     	if(lastTokenTimestamp > 0 ) {
     	
-	    	if((System.currentTimeMillis() - lastTokenTimestamp) > tokenLT)
+	    	if((System.currentTimeMillis() - lastTokenTimestamp) > tokenLT) {
 	    		resetTokenTimeout();
 	            return true;
+	    	}
     	}
     	
         return false;
