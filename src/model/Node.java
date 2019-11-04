@@ -10,20 +10,21 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import controller.MessageManager;
 import controller.PacketManager;
 import controller.TokenManager;
 import controller.SecurityManager;
 import controller.Rand;
 
 public class Node{
-    private String ID;
+    private static String ID;
     private UDPSocket inSocket;
     private UDPSocket outSocket;
     private PacketManager packMan;
     private TokenManager tokenMan;
     private SecurityManager securityMan;
+    private MessageManager messageMan;
     private ArrayList<String> config;
-    private ArrayList<String> nodesIDs;
     private boolean hasToken;
 
     public Node(){
@@ -61,6 +62,9 @@ public class Node{
     	
     	//Setting up token management module
     	tokenMan = new TokenManager(Boolean.parseBoolean(config.get(4)));
+    			
+    	//Creating message manager
+    	messageMan = new MessageManager();		
     			
 	}
 
@@ -214,6 +218,9 @@ public class Node{
 						
 					}
 					
+					if(destiny.equals("TODOS"))
+						buffer = "Incoming message from " + origin + ": " + msg;
+					
 					DatagramPacket packet = packMan.createPacket(errorControl, origin, destiny, CRC, msg);
 					send(packet);
 						
@@ -229,7 +236,7 @@ public class Node{
 				
 	}
 
-	public String getID() {
+	public static String getID() {
 		return ID;
 	}
 	
@@ -262,4 +269,8 @@ public class Node{
 		}
 	}
 	
+	
+	public void generateMessage() {
+		messageMan.getNewMessage();
+	}
 }

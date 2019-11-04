@@ -5,32 +5,48 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Set;
-import controller.Rand; 
+import controller.Rand;
+import model.Node; 
 
 public class MessageManager {
 	
 	private ArrayList<String> beginParts;
 	private ArrayList<String> middleParts;
 	private ArrayList<String> endParts;
+	private StringBuilder sb;
 	
 	public MessageManager() {
 		beginParts = new ArrayList<String>(readFile("begin.txt"));
 		middleParts = new ArrayList<String>(readFile("middle.txt"));
 		endParts = new ArrayList<String>(readFile("end.txt"));
+		
 	}
 	
-	public String getNewMessage() {
+	public ArrayList<String> getNewMessage() {
+		
+		String destiny = " ";
+		
+		ArrayList<String> result = new ArrayList<>();
+		result.add("naocopiado");
+		result.add(Node.getID());
+		result.add(destiny);
+		
+		sb = new StringBuilder();
 		
 		String begin = beginParts.get(Rand.getRandInt(0, beginParts.size()));
 		String middle = middleParts.get(Rand.getRandInt(0, middleParts.size()));
 		String end = endParts.get(Rand.getRandInt(0, endParts.size()));
 		
-		String result = begin + " " + middle + " " + end; 
+		sb.append(begin + " ");
+		sb.append(middle + " "); 
+		sb.append(end + " "); 
+		
+		//String errorControl, String origin, String destiny, String CRC, String msg
 		
 		return result;
 	}
 	
-private ArrayList<String> readFile(String fileName) {
+	private ArrayList<String> readFile(String fileName) {
     	
 		File file = new File(fileName);
     	Scanner scan = null;
