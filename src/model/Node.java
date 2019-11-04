@@ -206,7 +206,7 @@ public class Node{
 					
 					if(destiny.equals(ID)) {
 						
-						if (securityMan.check(CRC)) {
+						if (securityMan.check(CRC, msg)) {
 							errorControl = "ACK";
 						}
 						
@@ -271,6 +271,8 @@ public class Node{
 	
 	
 	public void generateMessage() {
-		messageMan.getNewMessage();
+		ArrayList<String> data = messageMan.getNewMessage();		
+		DatagramPacket packet = packMan.createPacket(data.get(0), data.get(1), data.get(2), data.get(3), data.get(4));
+		packMan.queueNewPacket(packet);		
 	}
 }

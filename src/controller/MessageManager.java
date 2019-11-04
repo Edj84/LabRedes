@@ -27,9 +27,6 @@ public class MessageManager {
 		String destiny = " ";
 		
 		ArrayList<String> result = new ArrayList<>();
-		result.add("naocopiado");
-		result.add(Node.getID());
-		result.add(destiny);
 		
 		sb = new StringBuilder();
 		
@@ -41,8 +38,15 @@ public class MessageManager {
 		sb.append(middle + " "); 
 		sb.append(end + " "); 
 		
-		//String errorControl, String origin, String destiny, String CRC, String msg
+		String msg = sb.toString();
+		String CRC = String.valueOf(SecurityManager.crc16(msg));
 		
+		result.add("naocopiado");
+		result.add(Node.getID());
+		result.add(destiny);
+		result.add(CRC);
+		result.add(msg);
+				
 		return result;
 	}
 	

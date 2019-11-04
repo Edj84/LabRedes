@@ -7,14 +7,14 @@ public class SecurityManager {
 	}
 
 	public boolean check(String CRC, String message) {
-		int crcCalculado = calculate_crc(message)
+		int crcCalculado = crc16(message);
 		if(String.valueOf(crcCalculado) == CRC){
 			return true;
 		}
 		return false;
 	}
 
-	public int crc16(String message) {
+	public static int crc16(String message) {
 	int crc = 0xFFFF;
 	byte[] buffer = message.getBytes();
 	for (int j = 0; j < buffer.length ; j++) {
