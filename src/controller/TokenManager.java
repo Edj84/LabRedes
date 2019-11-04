@@ -8,9 +8,11 @@ public final class TokenManager {
     private DatagramPacket token;
     private long lastTokenTimestamp;
     private boolean isTokenManager;
+    private int tokenLT;
     
-    public TokenManager(boolean isTokenManager) {
+    public TokenManager(boolean isTokenManager, int tokenTime, int pcCount) {
     	this.isTokenManager = isTokenManager;  
+    	this.tokenLT = tokenTime*1000*(pcCount+2);
     	token = null;
     	lastTokenTimestamp = -1;
     }
@@ -53,7 +55,7 @@ public final class TokenManager {
         
     	if(lastTokenTimestamp > 0 ) {
     	
-	    	if(newTimeStamp - lastTokenTimestamp < 20000) {
+	    	if(newTimeStamp - lastTokenTimestamp < tokenLT/2) {
 	    		System.out.println("You're not my token, you're just a shallow copy!");
 	    	}
 	            return true;
@@ -66,7 +68,8 @@ public final class TokenManager {
         
     	if(lastTokenTimestamp > 0 ) {
     	
-	    	if(System.currentTimeMillis() - lastTokenTimestamp > 30000)
+	    	if((System.currentTimeMillis() - lastTokenTimestamp) > tokenLT)
+	    		resetTokenTimeout();
 	            return true;
     	}
     	
@@ -79,6 +82,10 @@ public final class TokenManager {
     
     public DatagramPacket getToken() {
     	return token;
+    }
+    
+    private void resetTokenTimeout() {
+    	lastTokenTimestamp = System.currentTimeMillis();
     }
     
 }

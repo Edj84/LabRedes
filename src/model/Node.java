@@ -61,7 +61,7 @@ public class Node{
     	ID = config.get(2);
     	
     	//Setting up token management module
-    	tokenMan = new TokenManager(Boolean.parseBoolean(config.get(4)));
+    	tokenMan = new TokenManager(Boolean.parseBoolean(config.get(4)), Integer.parseInt(config.get(3)), 3); // 3 = numero de pcs
     			
     	//Creating message manager
     	messageMan = new MessageManager();		
