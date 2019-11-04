@@ -29,6 +29,7 @@ public class Node{
     public Node(){
         readConfig();
         setConfig();
+        
         if(isTokenManager())
         	tokenMan.aquireToken();
     }
@@ -149,12 +150,6 @@ public class Node{
 	private String process(ArrayList<String> data) {
 		
 		String packetType = data.get(0);
-		String errorControl = data.get(1);
-		String origin = data.get(2);
-		String destiny = data.get(3);
-		String CRC = data.get(4);
-		String msg = data.get(5);
-		
 		String buffer = null;
 		
 		switch(packetType) {
@@ -167,6 +162,12 @@ public class Node{
 		        break;
 				
 			case "2345":
+				
+				String errorControl = data.get(1);
+				String origin = data.get(2);
+				String destiny = data.get(3);
+				String CRC = data.get(4);
+				String msg = data.get(5);
 				
 				if (origin.equals(ID)) {
 					

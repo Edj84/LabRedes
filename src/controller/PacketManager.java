@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class PacketManager {
 	private ArrayList<DatagramPacket> queue;
 	private HashMap<String, ArrayList<String>> sentLog;
-	private InetAddress nextIPAddress;
+	private static InetAddress nextIPAddress;
 	private StringBuilder sb;
 	private int retentionLapse;
 	
@@ -18,6 +18,10 @@ public class PacketManager {
 		this.nextIPAddress = IP;
 		sentLog = new HashMap<String, ArrayList<String>>();
 		this.retentionLapse = retentionLapse;  
+	}
+	
+	public static InetAddress getNextInetAddress() {
+		return nextIPAddress;
 	}
 	
 	public ArrayList<String> unpack(DatagramPacket packet){

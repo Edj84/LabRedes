@@ -6,7 +6,7 @@ public class SecurityManager {
 		
 	}
 
-	public boolean check(String cRC) {
+	public boolean check(String CRC) {
 		// TODO Auto-generated method stub
 		return false;
 	}

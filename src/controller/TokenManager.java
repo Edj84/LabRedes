@@ -1,6 +1,7 @@
 package controller;
 
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.security.Timestamp;
 
 public final class TokenManager {
@@ -16,7 +17,14 @@ public final class TokenManager {
     
     public DatagramPacket createToken() {
     	
-    	DatagramPacket newToken = new DatagramPacket("1234".getBytes(), 1024);
+    	InetAddress nextIPAddress = PacketManager.getNextInetAddress();
+    	
+    	byte[] sendData = new byte[1024];
+		
+		sendData = "1234".getBytes();
+
+		DatagramPacket newToken = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8080);
+    	
     	return newToken;
     }
     
