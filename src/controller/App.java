@@ -15,7 +15,7 @@ public class App{
     public static void main(String[] args){
         node = new Node();
                
-       /* Thread send = new Thread(new Runnable() { 
+       Thread send = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
 				while (true) { 
@@ -85,7 +85,7 @@ public class App{
 			receive.run();
 			manageToken.run();
 		}
-		*/
+		
 	} 
 	
 }
