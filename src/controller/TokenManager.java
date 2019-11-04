@@ -9,7 +9,9 @@ public final class TokenManager {
     private boolean isTokenManager;
     
     public TokenManager(boolean isTokenManager) {
-    	this.isTokenManager = isTokenManager;    	
+    	this.isTokenManager = isTokenManager;  
+    	token = null;
+    	lastTokenTimestamp = -1;
     }
     
     public DatagramPacket createToken() {
@@ -18,40 +20,55 @@ public final class TokenManager {
     	return newToken;
     }
     
-    public DatagramPacket getToken() {
-    	return token;
+    public void destroyToken() {
+    	token = null;
     }
     
     public void aquireToken() {
     	
-    	token = createToken();
+    	long newTimeStamp = System.currentTimeMillis();
     	
     	if(isTokenManager) {
     		
-    		if(!checkDoubleToken())
-    			lastTokenTimestamp = System.currentTimeMillis();
-    		
-    	}	
+    		if(!checkDoubleToken(newTimeStamp)) {
+    			lastTokenTimestamp = newTimeStamp;
+    			token = createToken();
+    		}
+    	}
+    	
+    	else
+    		token = createToken();
+    	
     }
 
-    public boolean checkDoubleToken(){
+    public boolean checkDoubleToken(long newTimeStamp){
         
-    	if(System.currentTimeMillis() - lastTokenTimestamp < 20000)
-            return true;
+    	if(lastTokenTimestamp > 0 ) {
+    	
+	    	if(newTimeStamp - lastTokenTimestamp < 20000)
+	            return true;
+    	}
         
         return false;
     }
 
-    public boolean tokenTimeout(){
+    public boolean checkTokenTimeout(){
         
-    	if(System.currentTimeMillis() - lastTokenTimestamp > 30000)
-            return true;
-        
+    	if(lastTokenTimestamp > 0 ) {
+    	
+	    	if(System.currentTimeMillis() - lastTokenTimestamp > 30000)
+	            return true;
+    	}
+    	
         return false;
     }
     
     public boolean getIsTokenManager() {
     	return isTokenManager;
+    }
+    
+    public DatagramPacket getToken() {
+    	return token;
     }
     
 }

@@ -53,8 +53,15 @@ public class App{
 				while (true) { 
 					synchronized (this) { 
 						
-						if(node.isTokenManager())
-							node.checkTokenTimeout();							
+						if(node.isTokenManager()) {
+							
+							node.timeoutRoutine();
+							
+						}
+						
+						else {
+							node.tokenScramble();
+						}
 						
 					} 
 				} 

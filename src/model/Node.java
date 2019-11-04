@@ -13,6 +13,7 @@ import java.util.Scanner;
 import controller.PacketManager;
 import controller.TokenManager;
 import controller.SecurityManager;
+import controller.Rand;
 
 public class Node{
     private String ID;
@@ -27,7 +28,9 @@ public class Node{
 
     public Node(){
         readConfig();
-        setConfig();        
+        setConfig();
+        if(isTokenManager())
+        	tokenMan.aquireToken();
     }
     
     private void setConfig() {
@@ -57,9 +60,6 @@ public class Node{
     	
     	//Setting up token management module
     	tokenMan = new TokenManager(Boolean.parseBoolean(config.get(4)));
-    	
-    	//Filling other nodes IDs array
-    	
     			
 	}
 
@@ -102,7 +102,7 @@ public class Node{
 	}
 
 	public boolean hasToken() {
-    	return hasToken;
+    	return tokenMan.getToken() != null;		
     }
 	
 	public void send(DatagramPacket sendPacket) {
@@ -119,10 +119,12 @@ public class Node{
 	
 	public void sendFromQueue() {
 		
-		DatagramPacket sendPacket = packMan.getPacketFromQueue();
-			
-		if(sendPacket != null)
-			send(sendPacket);
+		if(hasToken) {
+			DatagramPacket sendPacket = packMan.getPacketFromQueue();
+				
+			if(sendPacket != null)
+				send(sendPacket);
+		}
 		
 	}
 	
@@ -160,7 +162,6 @@ public class Node{
 			case "1234":
 					
 				tokenMan.aquireToken();
-				hasToken = true;
 				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		        buffer = "Token received (Local time is " + timestamp + ")";
 		        break;
@@ -168,6 +169,10 @@ public class Node{
 			case "2345":
 				
 				if (origin.equals(ID)) {
+					
+					DatagramPacket token = tokenMan.createToken();
+					send(token);
+					hasToken = false;
 					
 					errorControl = errorControl.toUpperCase();
 					
@@ -188,12 +193,6 @@ public class Node{
 								buffer = "ERROR: unable to recover original message (CRC and content are both corrupt)";
 							}
 						}
-					}
-				
-					else {
-						DatagramPacket token = tokenMan.createToken();
-						send(token);
-						hasToken = false;
 					}
 					
 				}
@@ -237,7 +236,26 @@ public class Node{
 		return tokenMan.getIsTokenManager();
 	}
 	
-	public void checkTokenTimeout() {
-		tokenMan.tokenTimeout();
+	public void timeoutRoutine() {
+		
+		if (tokenMan.checkTokenTimeout()) {
+			DatagramPacket token = tokenMan.createToken();
+			send(token);
+		}
+		
 	}
+	
+	public void tokenScramble() {
+		
+		if(Rand.getRandInt(0, 20) > 15) {
+			DatagramPacket token = tokenMan.createToken();
+			send(token);
+		}
+		
+		if(hasToken) {
+			if(Rand.getRandInt(0, 20) > 15) 
+				tokenMan.destroyToken();
+		}
+	}
+	
 }
