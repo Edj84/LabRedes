@@ -31,8 +31,11 @@ public class Node{
         readConfig();
         setConfig();
         
-        if(isTokenManager())
+        if(isTokenManager()) {
         	tokenMan.aquireToken();
+        	sendFromQueue();
+        }
+   
     }
     
     private void setConfig() {
@@ -181,6 +184,7 @@ public class Node{
 			case "1234":
 					
 				tokenMan.aquireToken();
+				hasToken = true;
 				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		        buffer = "Token received (Local time is " + timestamp + ")";
 		        break;
@@ -276,16 +280,17 @@ public class Node{
 	
 	public void tokenScramble() {
 		
-		if(Rand.getRandInt(0, 20) > 21) {
+		if(Rand.getRandInt(0, 20) > 30) {
 			DatagramPacket token = tokenMan.createToken();
 			send(token);
 			System.out.println("Ops, that token just slipped out. Sorry about that");
 		}
 		
 		if(hasToken) {
-			if(Rand.getRandInt(0, 20) > 21) 
+			if(Rand.getRandInt(0, 20) > 30) {
 				tokenMan.destroyToken();
-			System.out.println("Damn, I killed your token pet. Sorry, pal!");
+				System.out.println("Damn, I killed your token pet. Sorry, pal!");
+			}		
 		}
 	}
 	
