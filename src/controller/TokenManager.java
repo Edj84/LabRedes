@@ -24,18 +24,14 @@ public final class TokenManager {
     
     public void aquireToken() {
     	
+    	token = createToken();
+    	
     	if(isTokenManager) {
     		
-    		if(!checkDoubleToken()){
-    			token = createToken();
+    		if(!checkDoubleToken())
     			lastTokenTimestamp = System.currentTimeMillis();
-    		}
-    	}
-    	
-    	else {
-    		token = createToken();
-    	}
-    
+    		
+    	}	
     }
 
     public boolean checkDoubleToken(){

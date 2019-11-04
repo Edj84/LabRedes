@@ -119,17 +119,10 @@ public class Node{
 	
 	public void sendFromQueue() {
 		
-		try {
+		DatagramPacket sendPacket = packMan.getPacketFromQueue();
 			
-			DatagramPacket sendPacket = packMan.getPacketFromQueue();
-			
-			if(sendPacket != null)
-				outSocket.send(sendPacket);
-		}
-		
-		catch (IOException e) {
-			System.out.println("ERROR: Unable to send packet");
-		}
+		if(sendPacket != null)
+			send(sendPacket);
 		
 	}
 	
@@ -199,7 +192,8 @@ public class Node{
 				
 					else {
 						DatagramPacket token = tokenMan.createToken();
-						send(token);						
+						send(token);
+						hasToken = false;
 					}
 					
 				}
@@ -239,4 +233,11 @@ public class Node{
 		return ID;
 	}
 	
+	public boolean isTokenManager() {
+		return tokenMan.getIsTokenManager();
+	}
+	
+	public void checkTokenTimeout() {
+		tokenMan.tokenTimeout();
+	}
 }

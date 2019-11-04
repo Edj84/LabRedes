@@ -45,13 +45,30 @@ public class App{
 				} 
 			} 
 		}); 
+		
+		Thread manageToken = new Thread(new Runnable() { 
+			@Override
+			public void run() { 
+				
+				while (true) { 
+					synchronized (this) { 
+						
+						if(node.isTokenManager())
+							node.checkTokenTimeout();							
+						
+					} 
+				} 
+			} 
+		}); 
 
 		send.start(); 
 		receive.start();
+		manageToken.start();
 		
 		while(true) {
 			send.run();
 			receive.run();
+			manageToken.run();
 		}
 		
 	} 
