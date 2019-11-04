@@ -6,14 +6,14 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PacketManager {
+public class PacketManager2 {
 	private ArrayList<DatagramPacket> queue;
 	private HashMap<String, ArrayList<String>> sentLog;
 	private static InetAddress nextIPAddress;
 	private StringBuilder sb;
 	private int retentionLapse;
 	
-	public PacketManager(InetAddress IP, int retentionLapse) {
+	public PacketManager2(InetAddress IP, int retentionLapse) {
 		queue = new ArrayList<DatagramPacket>();
 		this.nextIPAddress = IP;
 		sentLog = new HashMap<String, ArrayList<String>>();
@@ -84,7 +84,7 @@ public class PacketManager {
 		
 		sendData = aux.getBytes();
 
-		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8082);		
+		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8084);		
 		
 		return sendPacket;
 		

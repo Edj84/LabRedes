@@ -4,22 +4,17 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
 
-import model.Node;
+import model.Node2;
 
-public class App{
-    private static Node node;
+public class App2{
+    private static Node2 node;
     private static byte[] receiveData;
     private static DatagramPacket receivePacket;
     
     public static void main(String[] args){
-        node = new Node();
+        node = new Node2();
         
-        MessageManager msg = new MessageManager();
-        
-        for(int i = 0; i > 10; i++)
-        	System.out.println(msg.getNewMessage());
-        
-       /* Thread send = new Thread(new Runnable() { 
+        Thread send = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
 				while (true) { 
@@ -89,7 +84,7 @@ public class App{
 			receive.run();
 			manageToken.run();
 		}
-		*/
+		
 	} 
 	
 }

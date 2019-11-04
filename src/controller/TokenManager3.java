@@ -4,12 +4,12 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.security.Timestamp;
 
-public final class TokenManager {
+public final class TokenManager3 {
     private DatagramPacket token;
     private long lastTokenTimestamp;
     private boolean isTokenManager;
     
-    public TokenManager(boolean isTokenManager) {
+    public TokenManager3(boolean isTokenManager) {
     	this.isTokenManager = isTokenManager;  
     	token = null;
     	lastTokenTimestamp = -1;
@@ -23,7 +23,7 @@ public final class TokenManager {
 		
 		sendData = "1234".getBytes();
 
-		DatagramPacket newToken = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8082);
+		DatagramPacket newToken = new DatagramPacket(sendData, sendData.length, nextIPAddress, 8080);
     	
     	return newToken;
     }

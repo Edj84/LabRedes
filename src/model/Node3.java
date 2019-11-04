@@ -10,23 +10,23 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import controller.PacketManager;
-import controller.TokenManager;
+import controller.PacketManager3;
+import controller.TokenManager3;
 import controller.SecurityManager;
 import controller.Rand;
 
-public class Node{
+public class Node3{
     private String ID;
-    private UDPSocket inSocket;
-    private UDPSocket outSocket;
-    private PacketManager packMan;
-    private TokenManager tokenMan;
+    private UDPSocket3 inSocket;
+    private UDPSocket3 outSocket;
+    private PacketManager3 packMan;
+    private TokenManager3 tokenMan;
     private SecurityManager securityMan;
     private ArrayList<String> config;
     private ArrayList<String> nodesIDs;
     private boolean hasToken;
 
-    public Node(){
+    public Node3(){
         readConfig();
         setConfig();
         
@@ -40,7 +40,7 @@ public class Node{
     	InetAddress IP;
 		try {
 			IP = InetAddress.getByName(config.get(0));
-			packMan = new PacketManager(IP, Integer.parseInt(config.get(3)));   	
+			packMan = new PacketManager3(IP, Integer.parseInt(config.get(3)));   	
 		} 
 		
 		catch (UnknownHostException e) {
@@ -51,23 +51,23 @@ public class Node{
 		int nextNodePort = Integer.parseInt(config.get(1));
     	
     	//Setting up inSocket
-    	inSocket = new UDPSocket(8080);
+    	inSocket = new UDPSocket3(8084);
     	
     	//Setting up outSocket
-    	outSocket = new UDPSocket(nextNodePort);
+    	outSocket = new UDPSocket3(nextNodePort);
     	
     	//Setting up node ID
     	ID = config.get(2);
     	
     	//Setting up token management module
-    	tokenMan = new TokenManager(Boolean.parseBoolean(config.get(4)));
+    	tokenMan = new TokenManager3(Boolean.parseBoolean(config.get(4)));
     			
 	}
 
 	private void readConfig() {
     	
 		config = new ArrayList<String>();
-		File file = new File("config.txt");
+		File file = new File("config3.txt");
     	Scanner scan = null;
 		
     	try {
@@ -249,14 +249,14 @@ public class Node{
 	
 	public void tokenScramble() {
 		
-		if(Rand.getRandInt(0, 20) > 1) {
+		if(Rand.getRandInt(0, 20) > 15) {
 			DatagramPacket token = tokenMan.createToken();
 			send(token);
 			System.out.println("Ops, that token just slipped out. Sorry about that");
 		}
 		
 		if(hasToken) {
-			if(Rand.getRandInt(0, 20) > 1) 
+			if(Rand.getRandInt(0, 20) > 15) 
 				tokenMan.destroyToken();
 			System.out.println("Damn, I killed your token pet. Sorry, pal!");
 		}
