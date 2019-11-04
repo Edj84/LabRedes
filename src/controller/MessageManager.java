@@ -17,18 +17,15 @@ public class MessageManager {
 		beginParts = new ArrayList<String>(readFile("begin.txt"));
 		middleParts = new ArrayList<String>(readFile("middle.txt"));
 		endParts = new ArrayList<String>(readFile("end.txt"));
-		System.out.println("Inicializando");
 	}
 	
 	public String getNewMessage() {
 		
 		String begin = beginParts.get(Rand.getRandInt(0, beginParts.size()));
-		System.out.println(begin);
 		String middle = middleParts.get(Rand.getRandInt(0, middleParts.size()));
 		String end = endParts.get(Rand.getRandInt(0, endParts.size()));
 		
 		String result = begin + " " + middle + " " + end; 
-		System.out.println(result);
 		
 		return result;
 	}

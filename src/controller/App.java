@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.util.ArrayList;
+import controller.MessageManager;
 
 import model.Node;
 
@@ -13,12 +14,7 @@ public class App{
     
     public static void main(String[] args){
         node = new Node();
-        
-        MessageManager msg = new MessageManager();
-        
-        for(int i = 0; i > 10; i++)
-        	System.out.println(msg.getNewMessage());
-        
+               
        /* Thread send = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
