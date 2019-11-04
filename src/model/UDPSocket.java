@@ -9,7 +9,6 @@ import java.net.SocketException;
 
 public class UDPSocket { 
 	
-	
 	private DatagramSocket socket;
 	  
 	public UDPSocket(int port){

@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.ArrayList;
 
 import model.Node;
 
@@ -10,7 +11,6 @@ public class App{
     private static byte[] receiveData;
     private static DatagramPacket receivePacket;
     
-
     public static void main(String[] args){
         node = new Node();
         
@@ -20,7 +20,8 @@ public class App{
 				//while (true) { 
 					synchronized (this) { 
 						
-						node.send();
+						node.sendFromQueue(); 
+						
 					} 
 				} 
 			//} 
@@ -29,11 +30,17 @@ public class App{
 		Thread receive = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
+				
+				System.out.println("Im listening. My ID is " + node.getID());
+				
 				while (true) { 
 					synchronized (this) { 
 						
-						System.out.println("Im listening");
-						node.receive();		 
+						String msg = node.receive(); 
+						
+						if(msg != null)
+							System.out.println(msg);							
+						
 					} 
 				} 
 			} 

@@ -6,20 +6,24 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import controller.PackManager;
+import controller.PacketManager;
 import controller.TokenManager;
+import controller.SecurityManager;
 
 public class Node{
     private String ID;
     private UDPSocket inSocket;
     private UDPSocket outSocket;
-    private PackManager packMan;
+    private PacketManager packMan;
     private TokenManager tokenMan;
+    private SecurityManager securityMan;
     private ArrayList<String> config;
-    private DatagramPacket token;
+    private ArrayList<String> nodesIDs;
+    private boolean hasToken;
 
     public Node(){
         readConfig();
@@ -32,7 +36,7 @@ public class Node{
     	InetAddress IP;
 		try {
 			IP = InetAddress.getByName(config.get(0));
-			packMan = new PackManager(IP);   	
+			packMan = new PacketManager(IP, Integer.parseInt(config.get(3)));   	
 		} 
 		
 		catch (UnknownHostException e) {
@@ -52,10 +56,12 @@ public class Node{
     	ID = config.get(2);
     	
     	//Setting up token management module
-    	tokenMan = new TokenManager(Integer.parseInt(config.get(3)), Boolean.parseBoolean(config.get(4)));    			
+    	tokenMan = new TokenManager(Boolean.parseBoolean(config.get(4)));
+    	
+    	//Filling other nodes IDs array
+    	
     			
 	}
-
 
 	private void readConfig() {
     	
@@ -96,13 +102,13 @@ public class Node{
 	}
 
 	public boolean hasToken() {
-    	return token != null;
+    	return hasToken;
     }
 	
-	public void send() {
+	public void send(DatagramPacket sendPacket) {
+		
 		try {
-			packMan.createPacket(ID, "Manu", "19385749", "Oi, mundo!");
-			outSocket.send(packMan.getPacket());
+			outSocket.send(sendPacket);
 		}
 		
 		catch (IOException e) {
@@ -111,15 +117,126 @@ public class Node{
 		
 	}
 	
-	public void receive() {
+	public void sendFromQueue() {
+		
+		try {
+			
+			DatagramPacket sendPacket = packMan.getPacketFromQueue();
+			
+			if(sendPacket != null)
+				outSocket.send(sendPacket);
+		}
+		
+		catch (IOException e) {
+			System.out.println("ERROR: Unable to send packet");
+		}
+		
+	}
+	
+	public String receive() {
+		
+		String msg = null;
+		
 		try {
 			DatagramPacket packet = inSocket.receive();
-			packMan.unpack(packet);
+			ArrayList<String> data = packMan.unpack(packet);
+			msg = process(data);
 		} 
 		
 		catch (IOException e) {
 			System.out.println("ERROR: Unable to receive packet");
 		}
+		
+		return msg;
+		
+	}
+
+	private String process(ArrayList<String> data) {
+		
+		String packetType = data.get(0);
+		String errorControl = data.get(1);
+		String origin = data.get(2);
+		String destiny = data.get(3);
+		String CRC = data.get(4);
+		String msg = data.get(5);
+		
+		String buffer = null;
+		
+		switch(packetType) {
+		
+			case "1234":
+					
+				tokenMan.aquireToken();
+				hasToken = true;
+				Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		        buffer = "Token received (Local time is " + timestamp + ")";
+		        break;
+				
+			case "2345":
+				
+				if (origin.equals(ID)) {
+					
+					errorControl = errorControl.toUpperCase();
+					
+					if(errorControl.equals("ERROR")){
+						
+						int attemps = packMan.getSendAttemps(destiny, CRC, msg);
+						
+						if(attemps < 2) {
+							msg = packMan.retrieveSentMsg(destiny, CRC, msg);
+							
+							if(msg != null) {
+								//CRC = getCRC(msg)
+								DatagramPacket packet = packMan.createPacket("naocopiado", origin, destiny, CRC, msg);
+								packMan.queuePacket(packet);
+							}
+							
+							else {
+								buffer = "ERROR: unable to recover original message (CRC and content are both corrupt)";
+							}
+						}
+					}
+				
+					else {
+						DatagramPacket token = tokenMan.createToken();
+						send(token);						
+					}
+					
+				}
+				
+				else {
+					
+					if(destiny.equals(ID)) {
+						
+						if (securityMan.check(CRC)) {
+							errorControl = "ACK";
+						}
+						
+						else {
+							errorControl = "erro";
+						}
+						
+						buffer = "Incoming message from " + origin + ": " + msg;
+						
+					}
+					
+					DatagramPacket packet = packMan.createPacket(errorControl, origin, destiny, CRC, msg);
+					send(packet);
+						
+				}
+				
+				break;	
+			
+			default:
+				buffer = "ERROR: Invalid header (packet type identifier " + packetType + ")";
+			}
+		
+		return buffer;
+				
+	}
+
+	public String getID() {
+		return ID;
 	}
 	
 }

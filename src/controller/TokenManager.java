@@ -5,26 +5,42 @@ import java.security.Timestamp;
 
 public final class TokenManager {
     private DatagramPacket token;
-    private int retentionLapse;
-    private long timeOfCreation;
-    private boolean manager;
+    private long lastTokenTimestamp;
+    private boolean isTokenManager;
     
-    
-    
-    public TokenManager(int retentionLapse, boolean manager) {
-    	this.manager = manager;
-    	this.retentionLapse = retentionLapse;
+    public TokenManager(boolean isTokenManager) {
+    	this.isTokenManager = isTokenManager;    	
     }
     
-    private void createToken() {
+    public DatagramPacket createToken() {
     	
     	DatagramPacket newToken = new DatagramPacket("1234".getBytes(), 1024);
-    	timeOfCreation = System.currentTimeMillis();
+    	return newToken;
     }
     
+    public DatagramPacket getToken() {
+    	return token;
+    }
+    
+    public void aquireToken() {
+    	
+    	if(isTokenManager) {
+    		
+    		if(!checkDoubleToken()){
+    			token = createToken();
+    			lastTokenTimestamp = System.currentTimeMillis();
+    		}
+    	}
+    	
+    	else {
+    		token = createToken();
+    	}
+    
+    }
+
     public boolean checkDoubleToken(){
         
-    	if(System.currentTimeMillis() - timeOfCreation < 3000)
+    	if(System.currentTimeMillis() - lastTokenTimestamp < 20000)
             return true;
         
         return false;
@@ -32,10 +48,14 @@ public final class TokenManager {
 
     public boolean tokenTimeout(){
         
-    	if(System.currentTimeMillis() - timeOfCreation > 12000)
+    	if(System.currentTimeMillis() - lastTokenTimestamp > 30000)
             return true;
         
         return false;
     }
-
+    
+    public boolean getIsTokenManager() {
+    	return isTokenManager;
+    }
+    
 }
