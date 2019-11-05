@@ -43,7 +43,6 @@ public final class TokenManager {
     		System.out.println("Adquirindo token");
     		
     		if(!checkDoubleToken(newTimeStamp)) {
-    			System.out.println("Zerando stamp");
     			lastTokenTimestamp = newTimeStamp;
     			token = createToken();
     		}
