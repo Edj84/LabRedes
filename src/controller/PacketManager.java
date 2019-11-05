@@ -83,8 +83,6 @@ public class PacketManager {
 		
 		String aux = sb.toString();
 		
-		System.out.println(aux);
-		
 		byte[] sendData = new byte[1024];
 		
 		sendData = aux.getBytes();
@@ -99,7 +97,7 @@ public class PacketManager {
 		
 		System.out.println("Fila com " + queue.size());
 		
-		if(queue.size() <= 10 ) {
+		if(queue.size() < 10 ) {
 			queue.add(sendPacket);
 		}
 
