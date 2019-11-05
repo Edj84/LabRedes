@@ -16,7 +16,11 @@ public class PacketManager {
 		queue = new ArrayList<DatagramPacket>();
 		this.nextIPAddress = IP;
 		sentLog = new HashMap<String, ArrayList<String>>();
-		this.retentionLapse = retentionLapse;  
+		this.retentionLapse = retentionLapse*1000;  
+	}
+	
+	public int getRetentionLapse(){
+		return retentionLapse;
 	}
 	
 	public static InetAddress getNextInetAddress() {

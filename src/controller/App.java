@@ -21,7 +21,7 @@ public class App{
 				while (true) { 
 					synchronized (this) { 
 						try {
-							Thread.sleep(10000);
+							Thread.sleep(5000);
 							node.generateMessage();		
 						} 
 						catch (InterruptedException e) {

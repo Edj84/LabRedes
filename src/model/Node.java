@@ -138,7 +138,7 @@ public class Node{
 			else {
 				
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(packMan.getRetentionLapse());
 					sendPacket = packMan.getPacketFromQueue();
 					
 					if(sendPacket != null)
