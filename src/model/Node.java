@@ -132,17 +132,20 @@ public class Node{
 			
 			DatagramPacket sendPacket = packMan.getPacketFromQueue();
 				
-			if(sendPacket != null)
+			if(sendPacket != null){
 				send(sendPacket);
-			
+				hasToken = false;
+			}
 			else {
 				
 				try {
 					Thread.sleep(packMan.getRetentionLapse());
 					sendPacket = packMan.getPacketFromQueue();
 					
-					if(sendPacket != null)
+					if(sendPacket != null){
 						send(sendPacket);
+						hasToken = false;
+					}
 					else {
 						send(tokenMan.createToken());
 						hasToken = false;
@@ -250,6 +253,7 @@ public class Node{
 					
 					DatagramPacket packet = packMan.createPacket(errorControl, origin, destiny, CRC, msg);
 					send(packet);
+					hasToken = false;
 						
 				}
 				
@@ -278,6 +282,7 @@ public class Node{
 		if (tokenMan.checkTokenTimeout()) {
 			DatagramPacket token = tokenMan.createToken();
 			send(token);
+			hasToken = false;
 			System.out.println("Where the heck is that old token? Here goes a new one'");
 		}
 		
@@ -288,6 +293,7 @@ public class Node{
 		if(Rand.getRandInt(0, 20) > 30) {
 			DatagramPacket token = tokenMan.createToken();
 			send(token);
+			hasToken = false;
 			System.out.println("Ops, that token just slipped out. Sorry about that");
 		}
 		
