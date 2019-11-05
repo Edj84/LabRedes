@@ -40,7 +40,10 @@ public final class TokenManager {
     	
     	if(isTokenManager) {
     		
+    		System.out.println("Adquirindo token");
+    		
     		if(!checkDoubleToken(newTimeStamp)) {
+    			System.out.println("Zerando stamp");
     			lastTokenTimestamp = newTimeStamp;
     			token = createToken();
     		}
@@ -57,10 +60,10 @@ public final class TokenManager {
         
     	if(lastTokenTimestamp > 0 ) {
     	
-	    	if(newTimeStamp - lastTokenTimestamp < tokenLT/3) {
+	    	if((newTimeStamp - lastTokenTimestamp) < tokenLT/3) {
 	    		System.out.println("You're not my token, you're just a shallow copy!");
+	    	    return true;
 	    	}
-	            return true;
     	}
         
         return false;
