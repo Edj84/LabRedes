@@ -96,9 +96,14 @@ public class PacketManager {
 	}
 	
 	public void queueNewPacket(DatagramPacket sendPacket) {
+		
+		System.out.println("Fila com " + queue.size());
+		
 		if(queue.size() <= 10 ) {
 			queue.add(sendPacket);
 		}
+
+		System.out.println("Fila com " + queue.size());		
 	}
 	
 	public void queuePacket(DatagramPacket sendPacket) {
