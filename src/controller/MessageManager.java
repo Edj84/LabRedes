@@ -46,7 +46,7 @@ public class MessageManager {
 		result.add(destiny);
 		result.add(CRC);
 		result.add(msg);
-				
+		
 		return result;
 	}
 	

@@ -33,8 +33,8 @@ public class Node{
         
         if(isTokenManager()) {
         	tokenMan.aquireToken();
-        	hasToken = true;
-        	sendFromQueue();
+			hasToken = true;
+			sendFromQueue();
         }
    
     }
@@ -258,13 +258,15 @@ public class Node{
 			default:
 				buffer = "ERROR: Invalid header (packet type identifier " + packetType + ")";
 			}
-		
+					
 		return buffer;
 				
 	}
 
 	public static String getID() {
-		return ID;
+		while (true) { 
+			return ID;
+		}
 	}
 	
 	public boolean isTokenManager() {

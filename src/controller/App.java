@@ -21,7 +21,7 @@ public class App{
 				while (true) { 
 					synchronized (this) { 
 						try {
-							Thread.sleep(5000);
+							Thread.sleep(3000);
 							node.generateMessage();		
 						} 
 						catch (InterruptedException e) {
@@ -56,7 +56,7 @@ public class App{
 					synchronized (this) { 
 						
 						String msg = node.receive(); 
-						
+												
 						if(msg != null)
 							System.out.println(msg);							
 						
@@ -97,11 +97,13 @@ public class App{
 		send.start(); 
 		receive.start();
 		manageToken.start();
+		createMsg.start();
 		
 		while(true) {
 			send.run();
 			receive.run();
 			manageToken.run();
+			createMsg.run();
 		}
 		
 	} 
