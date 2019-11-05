@@ -56,7 +56,7 @@ public class PacketManager {
 				cleanData = cleanData.substring(separatorIndex + 1);
 				//System.out.println("Data agora é " + cleanData);
 			}
-			
+			msgParts.add(cleanData);
 		}
 		
 		return msgParts;
@@ -78,6 +78,8 @@ public class PacketManager {
 		sb.append(msg);
 		
 		String aux = sb.toString();
+		
+		System.out.println(aux);
 		
 		byte[] sendData = new byte[1024];
 		

@@ -33,6 +33,7 @@ public class Node{
         
         if(isTokenManager()) {
         	tokenMan.aquireToken();
+        	hasToken = true;
         	sendFromQueue();
         }
    
@@ -142,8 +143,10 @@ public class Node{
 					
 					if(sendPacket != null)
 						send(sendPacket);
-					else
+					else {
 						send(tokenMan.createToken());
+						hasToken = false;
+					}
 				} 
 				
 				catch (InterruptedException e) {

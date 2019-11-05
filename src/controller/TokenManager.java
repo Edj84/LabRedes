@@ -57,7 +57,7 @@ public final class TokenManager {
         
     	if(lastTokenTimestamp > 0 ) {
     	
-	    	if(newTimeStamp - lastTokenTimestamp < tokenLT/2) {
+	    	if(newTimeStamp - lastTokenTimestamp < tokenLT/3) {
 	    		System.out.println("You're not my token, you're just a shallow copy!");
 	    	}
 	            return true;
