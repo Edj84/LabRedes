@@ -135,6 +135,7 @@ public class Node{
 			DatagramPacket sendPacket = packMan.getPacketFromQueue();
 				
 			if(sendPacket != null){
+				System.out.println("ENVIANDO MSG");
 				send(sendPacket);
 				hasToken = false;
 			}
@@ -239,7 +240,7 @@ public class Node{
 						}
 					}
 
-					if(errorControl.equals("naocopiado")){
+					if(errorControl.equals("NAOCOPIADO")){
 						System.out.println(" com status 'nao copiado'. DESTINATARIO NAO EXISTE NA REDE");
 					}
 					

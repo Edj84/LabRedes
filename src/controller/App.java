@@ -15,14 +15,14 @@ public class App{
     public static void main(String[] args){
         node = new Node();
        
-        Thread createMsg = new Thread(new Runnable() { 
+		Thread createMsg = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
 				while (true) { 
 					synchronized (this) { 
 						try {
-							Thread.sleep(3000);
-							node.generateMessage();		
+							node.generateMessage();
+							Thread.sleep(300000);		
 						} 
 						catch (InterruptedException e) {
 							System.out.println("ERROR: I won't say anything untill I see a lawyer");
@@ -32,15 +32,19 @@ public class App{
 				} 
 			} 
 		});  
-        
+		        
        Thread send = new Thread(new Runnable() { 
 			@Override
 			public void run() { 
 				while (true) { 
 					synchronized (this) { 
-						
-						node.sendFromQueue(); 
-						
+						try {
+						node.sendFromQueue();
+						Thread.sleep(3000); 
+					}
+					catch (InterruptedException e) {
+						System.out.println("ERROR: I won't say anything untill I see a lawyer");
+					}	
 					} 
 				} 
 			} 
@@ -55,11 +59,16 @@ public class App{
 				while (true) { 
 					synchronized (this) { 
 						
-						String msg = node.receive(); 
-												
+					try {
+						String msg = node.receive();
+						Thread.sleep(3000);
 						if(msg != null)
-							System.out.println(msg);							
+						System.out.println(msg);							
+					} 
 						
+					catch (InterruptedException e) {
+						System.out.println("ERROR: I won't say anything untill I see a lawyer");
+					}	
 					} 
 				} 
 			} 
@@ -75,11 +84,11 @@ public class App{
 						if(node.isTokenManager()) {
 							
 							try {
-								Thread.sleep(5000);
+								//Thread.sleep(5000);
 								node.timeoutRoutine();
 							} 
 							
-							catch (InterruptedException e) {
+							catch (Exception e) {
 								System.out.println("ERROR: Thread refuses to sleep. Maybe a song and some hot milk might help");
 							}
 								
