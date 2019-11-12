@@ -12,7 +12,7 @@ public final class TokenManager {
     
     public TokenManager(boolean isTokenManager, int tokenTime, int pcCount) {
     	this.isTokenManager = isTokenManager;  
-    	this.tokenLT = tokenTime*1000*(pcCount+2);
+    	this.tokenLT = tokenTime*1000*(pcCount);
     	token = null;
     	lastTokenTimestamp = -1;
     }

@@ -24,7 +24,7 @@ public class MessageManager {
 	
 	public ArrayList<String> getNewMessage() {
 		
-		String destiny = "Stein";
+		String destiny = "Batata";
 		
 		ArrayList<String> result = new ArrayList<>();
 		

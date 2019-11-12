@@ -207,6 +207,7 @@ public class Node{
 				
 				if (origin.equals(ID)) {
 					
+					System.out.print("A mensagem que enviei para " + destiny + " retornou");
 					DatagramPacket token = tokenMan.createToken();
 					send(token);
 					hasToken = false;
@@ -215,11 +216,13 @@ public class Node{
 					
 					if(errorControl.equals("ERROR")){
 						
+						System.out.println(" com erro.");
 						int attemps = packMan.getSendAttemps(destiny, CRC, msg);
 						
 						if(attemps < 2) {
 							msg = packMan.retrieveSentMsg(destiny, CRC, msg);
-							
+							System.out.println("Mensagem foi enviada apenas 1 vez. VOU RETRANSMITIR");
+
 							if(msg != null) {
 								//CRC = getCRC(msg)
 								DatagramPacket packet = packMan.createPacket("naocopiado", origin, destiny, CRC, msg);
@@ -227,9 +230,17 @@ public class Node{
 							}
 							
 							else {
-								buffer = "ERROR: unable to recover original message (CRC and content are both corrupt)";
+								buffer = "ERROR: unable to recover original message to retransmit (CRC and content are both corrupt)";
 							}
 						}
+
+						else{
+							System.out.println("Mensagem foi transmitida sem sucesso por 2 vezes. ABORTANDO RETRANSMISSÃO");
+						}
+					}
+
+					if(errorControl.equals("naocopiado")){
+						System.out.println(" com status 'nao copiado'. DESTINATARIO NAO EXISTE NA REDE");
 					}
 					
 				}
@@ -250,14 +261,14 @@ public class Node{
 						
 					}
 					
-					if(destiny.equals("TODOS"))
-						buffer = "Incoming message from " + origin + ": " + msg;
+					if(destiny.equals("TODOS")){
+						buffer = "RECEBENDO MENSAGEM DE BORADCAST DE " + origin + ": " + msg;
+					}
+				}
 					
 					DatagramPacket packet = packMan.createPacket(errorControl, origin, destiny, CRC, msg);
 					send(packet);
 					hasToken = false;
-						
-				}
 				
 				break;	
 			
