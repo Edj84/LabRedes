@@ -40,8 +40,6 @@ public final class TokenManager {
     	
     	if(isTokenManager) {
     		
-    		System.out.println("Adquirindo token");
-    		
     		if(!checkDoubleToken(newTimeStamp)) {
     			lastTokenTimestamp = newTimeStamp;
     			token = createToken();
@@ -49,7 +47,7 @@ public final class TokenManager {
     	}
     	
     	else {
-    		token = createToken();
+			token = createToken();
     		lastTokenTimestamp = newTimeStamp;
     	}
     	
