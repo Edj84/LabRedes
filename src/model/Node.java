@@ -212,7 +212,7 @@ public class Node{
 					DatagramPacket token = tokenMan.createToken();
 					send(token);
 					hasToken = false;
-					
+										
 					errorControl = errorControl.toUpperCase();
 					
 					if(errorControl.equals("ERROR")){
@@ -250,6 +250,12 @@ public class Node{
 					
 					if(destiny.equals(ID)) {
 						
+						int chance = Rand.getRandInt(0, 2);
+
+						if(chance == 1 ){
+							CRC = securityMan.generateCrcError(CRC);
+						}
+
 						if (securityMan.check(CRC, msg)) {
 							errorControl = "ACK";
 						}
@@ -263,7 +269,7 @@ public class Node{
 					}
 					
 					if(destiny.equals("TODOS")){
-						buffer = "RECEBENDO MENSAGEM DE BORADCAST DE " + origin + ": " + msg;
+						buffer = "RECEBENDO MENSAGEM DE BROADCAST DE " + origin + ": " + msg;
 					}
 				}
 					
